@@ -1,18 +1,12 @@
-# Your startup name here
+# Web RPG
 
 [My Notes](notes.md)
 
 An asynchronous JRPG web-browser game. Players will create an account so their characters can be saved and then they will be matched with other player's characters for battles. When characters die in battle the player will be prompted to create a new one and the dead character's score will be added to the scoreboard.
 
-> [!NOTE]
-> This is a template for your startup application. You must modify this `README.md` file for each phase of your development. You only need to fill in the section for each deliverable when that deliverable is submitted in Canvas. Without completing the section for a deliverable, the TA will not know what to look for when grading your submission. Feel free to add additional information to each deliverable description, but make sure you at least have the list of rubric items and a description of what you did for each item.
-
-> [!NOTE]
-> If you are not familiar with Markdown then you should review the [documentation](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax) before continuing.
-
 ### Elevator pitch
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+This browser-based RPG will be playable in the background while working on other things. Players will log in create a character and at intervals throughout the day they will be able to adventure out and do a couple of fights. The players will collect gear and level up with the goal of becoming the strongest adventurer. The catch is that when players die they will have to create a new character and their dead character will be added to the leaderboard.
 
 ### Design
 
