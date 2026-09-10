@@ -27,20 +27,22 @@ sequenceDiagram
 
 ### Key features
 
-- Describe your key feature
-- Describe your key feature
-- Describe your key feature
+- High score leaderboard will be stored persistently
+- Database will store player data connected to an account
+- Ability to create and login to an account
+- Players will pull data about other characters for the battles
+- 
 
 ### Technologies
 
 I am going to use the required technologies in the following ways.
 
-- **HTML** - Description here
-- **CSS** - Description here
-- **React** - Description here
+- **HTML** - Two different webpages one for the login and one for the game page. The game page would mainly just be a container to run the actual program.
+- **CSS** - The css will be have appropriate margins and color choices that will make the text easy to read. 
+- **React** - React will handle the login as well as dynamically adjusting the web browser depending on mobile or PC. 
 - **Service** - Description here
-- **DB/Login** - Description here
-- **WebSocket** - Description here
+- **DB/Login** - Database will store the login information as well as character information, gear info, etc. 
+- **WebSocket** - Websocket will allow the players to gain small bonuses when their character is used to help other players. They will receive real time messages when their character helped out.
 
 ## 🚀 Specification Deliverable
 
@@ -50,10 +52,10 @@ I am going to use the required technologies in the following ways.
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
 - [x] I completed the prerequisites for this deliverable (Git commit requirement)
-- [ ] Proper use of Markdown
+- [X] Proper use of Markdown
 - [x] A concise and compelling elevator pitch
-- [ ] Description of key features
-- [ ] Description of how you will use each technology including your 3rd party API and use of WebSocket
+- [X] Description of key features
+- [X] Description of how you will use each technology including your 3rd party API and use of WebSocket
 - [ ] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.
 
 ## 🚀 AWS deliverable
