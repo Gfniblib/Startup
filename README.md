@@ -20,9 +20,9 @@ sequenceDiagram
     actor OtherPlayer
     actor Server
     LocalPlayer->>Server: Upload Character Information
-    Server->>LocalPlayer: Ally Character Information
+    Server-->>LocalPlayer: Ally Character Information
     OtherPlayer->>Server: Upload Ally Character Information
-    Server->>OtherPlayer: Message local player that their character helped out someone.
+    Server-->>OtherPlayer: Message local player that their character helped out someone.
 ```
 
 ### Key features
