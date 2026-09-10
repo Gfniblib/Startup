@@ -12,13 +12,17 @@ This browser-based RPG will be playable in the background while working on other
 
 ![Design image](placeholder.png)
 
-Sequence diagram for how the player's inputs will react with the backen.
+Sequence diagram showing how the player will receive info of other players characters to use in asynchronous battles.
 
 ```mermaid
 sequenceDiagram
-    actor You
-    actor Website
-    You->>Website: Replace this with your design
+    actor LocalPlayer
+    actor OtherPlayer
+    actor Server
+    LocalPlayer->>Server: Upload Character Information
+    Server->>LocalPlayer: Ally Character Information
+    OtherPlayer->>Server: Upload Ally Character Information
+    Server->>OtherPlayer: Message local player that their character helped out someone.
 ```
 
 ### Key features
