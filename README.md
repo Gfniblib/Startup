@@ -6,7 +6,7 @@ An asynchronous JRPG web-browser game. Players will create an account so their c
 
 ### Elevator pitch
 
-This browser-based RPG will be playable in the background while working on other things. Players will log in create a character and at intervals throughout the day they will be able to adventure out and do a couple of fights. The players will collect gear and level up with the goal of becoming the strongest adventurer. The catch is that when players die they will have to create a new character and their dead character will be added to the leaderboard.
+Designed to run in a background tab of your PC or directly in your phone's browser, this web RPG has you form asynchronous parties with other real players. Delve into the world of Lorebound (Subject to change) to become one of the legends. During work breaks, collect loot in battle to help you climb the leaderboard, but beware because once you die there is no coming back.
 
 ### Design
 
