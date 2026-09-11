@@ -2,7 +2,9 @@
 
 [My Notes](notes.md)
 
-An asynchronous JRPG web-browser game. Players will create an account so their characters can be saved and then they will be matched with other players' characters for battles. When characters die in battle the player will be prompted to create a new one and the dead character's score will be added to the scoreboard.
+### Short Description of the Project
+
+This web rpg is an asynchronous JRPG web-browser game. Players will create an account so their characters can be saved and then they will be matched with other players' characters for battles. When characters die in battle the player will be prompted to create a new one and the dead character's score will be added to the scoreboard.
 
 ### Elevator pitch
 
