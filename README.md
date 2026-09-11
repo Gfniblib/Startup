@@ -1,48 +1,53 @@
-# Your startup name here
+# Web RPG
 
 [My Notes](notes.md)
 
-A brief description of the application here. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-> [!NOTE]
-> This is a template for your startup application. You must modify this `README.md` file for each phase of your development. You only need to fill in the section for each deliverable when that deliverable is submitted in Canvas. Without completing the section for a deliverable, the TA will not know what to look for when grading your submission. Feel free to add additional information to each deliverable description, but make sure you at least have the list of rubric items and a description of what you did for each item.
-
-> [!NOTE]
-> If you are not familiar with Markdown then you should review the [documentation](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax) before continuing.
+An asynchronous JRPG web-browser game. Players will create an account so their characters can be saved and then they will be matched with other players' characters for battles. When characters die in battle the player will be prompted to create a new one and the dead character's score will be added to the scoreboard.
 
 ### Elevator pitch
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Designed to run in a background tab of your PC or directly in your phone's browser, this web RPG has you form asynchronous parties with other real players. Delve into the world of Lorebound (Subject to change) to become one of the legends. During work breaks, collect loot in battle to help you climb the leaderboard, but beware because once you die, there is no coming back.
 
 ### Design
 
-![Design image](placeholder.png)
+![Mobile mockup](images/CS260Mockup1.png)
+![PC mockup](images/CS260Mockup2.png)
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Sequence diagram showing how the player will receive info of other players characters to use in asynchronous battles.
 
 ```mermaid
 sequenceDiagram
-    actor You
-    actor Website
-    You->>Website: Replace this with your design
+    actor LocalPlayer
+    actor OtherPlayer
+    actor Server
+    LocalPlayer->>Server: Upload Character Information
+    Server-->>LocalPlayer: Ally Character Information
+    OtherPlayer->>Server: Upload Ally Character Information
+    Server-->>OtherPlayer: Message ally player that their character helped out someone.
 ```
 
 ### Key features
 
-- Describe your key feature
-- Describe your key feature
-- Describe your key feature
+- High score leaderboard will be stored persistently
+- Database will store player data with a reference to an account
+- Ability to create and login to an account
+- Players will pull data about other characters for the battles
+- Feature a randomized set of battles for characters to take on
 
 ### Technologies
 
 I am going to use the required technologies in the following ways.
 
-- **HTML** - Description here
-- **CSS** - Description here
-- **React** - Description here
-- **Service** - Description here
-- **DB/Login** - Description here
-- **WebSocket** - Description here
+- **HTML** - Two different pages, one for the login and one for the game page. The game page would mainly just be a container to run the actual program. 
+- **CSS** - The css will have appropriate margins and color choices that will make the text easy to read. 
+- **React** - React will handle the login as well as the routing feature to switch between login and game views. React can check to see if the user is on mobile or PC and then render a different layout accordingly.
+- **Service** - Backend will deal with the following:
+    - Fetching login info and character info
+    - Uploading final character score on death to the leaderboard
+    - Retrieve information for upcoming battles.
+    - Updating the characters info to have one source of truth
+- **DB/Login** - Database will store the login information as well as character information, gear info, etc. 
+- **WebSocket** - Websocket will allow the players to gain small bonuses when their character is used to help other players. They will receive real time messages when their character helped out someone else.
 
 ## 🚀 Specification Deliverable
 
@@ -51,12 +56,12 @@ I am going to use the required technologies in the following ways.
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] I completed the prerequisites for this deliverable (Git commit requirement)
-- [ ] Proper use of Markdown
-- [ ] A concise and compelling elevator pitch
-- [ ] Description of key features
-- [ ] Description of how you will use each technology including your 3rd party API and use of WebSocket
-- [ ] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.
+- [x] I completed the prerequisites for this deliverable (Git commit requirement)
+- [X] Proper use of Markdown
+- [x] A concise and compelling elevator pitch
+- [X] Description of key features
+- [X] Description of how you will use each technology including your 3rd party API and use of WebSocket
+- [x] One or more rough sketches of your application. Images must be embedded in this file using Markdown image references.
 
 ## 🚀 AWS deliverable
 
