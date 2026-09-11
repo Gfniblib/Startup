@@ -10,8 +10,8 @@ Designed to run in a background tab of your PC or directly in your phone's brows
 
 ### Design
 
-![Mobile mockup](images/CS260 Mockup 1.png)
-![PC mockup](images/CS260 Mockup 2.png)
+![Mobile mockup](images/CS260Mockup1.png)
+![PC mockup](images/CS260Mockup2.png)
 
 Sequence diagram showing how the player will receive info of other players characters to use in asynchronous battles.
 
