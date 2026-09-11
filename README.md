@@ -2,11 +2,11 @@
 
 [My Notes](notes.md)
 
-An asynchronous JRPG web-browser game. Players will create an account so their characters can be saved and then they will be matched with other player's characters for battles. When characters die in battle the player will be prompted to create a new one and the dead character's score will be added to the scoreboard.
+An asynchronous JRPG web-browser game. Players will create an account so their characters can be saved and then they will be matched with other players' characters for battles. When characters die in battle the player will be prompted to create a new one and the dead character's score will be added to the scoreboard.
 
 ### Elevator pitch
 
-Designed to run in a background tab of your PC or directly in your phone's browser, this web RPG has you form asynchronous parties with other real players. Delve into the world of Lorebound (Subject to change) to become one of the legends. During work breaks, collect loot in battle to help you climb the leaderboard, but beware because once you die there is no coming back.
+Designed to run in a background tab of your PC or directly in your phone's browser, this web RPG has you form asynchronous parties with other real players. Delve into the world of Lorebound (Subject to change) to become one of the legends. During work breaks, collect loot in battle to help you climb the leaderboard, but beware because once you die, there is no coming back.
 
 ### Design
 
@@ -29,7 +29,7 @@ sequenceDiagram
 ### Key features
 
 - High score leaderboard will be stored persistently
-- Database will store player data with a referene to an account
+- Database will store player data with a reference to an account
 - Ability to create and login to an account
 - Players will pull data about other characters for the battles
 - Feature a randomized set of battles for characters to take on
@@ -38,9 +38,9 @@ sequenceDiagram
 
 I am going to use the required technologies in the following ways.
 
-- **HTML** - Two different webpages one for the login and one for the game page. The game page would mainly just be a container to run the actual program.
+- **HTML** - Two different pages, one for the login and one for the game page. The game page would mainly just be a container to run the actual program. 
 - **CSS** - The css will have appropriate margins and color choices that will make the text easy to read. 
-- **React** - React will handle the login as well as dynamically adjusting the web browser depending on mobile or PC. 
+- **React** - React will handle the login as well as the routing feature to switch between login and game views. React can check to see if the user is on mobile or PC and then render a different layout accordingly.
 - **Service** - Backend will deal with the following:
     - Fetching login info and character info
     - Uploading final character score on death to the leaderboard
