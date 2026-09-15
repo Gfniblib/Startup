@@ -15,6 +15,9 @@ I LOVE WEB PROGRAMMING
 ## AWS
 
 Interesting things I have learned about AWS
+- AWS its quite quick and easy to set up a remote machine that can host your stuff.
+- Although you do not need to go 100% with the amazon service. The host zone (records) can be dealt with by another party
+  The record just takes the domain name given and points to the IP address behind it.
 
 ## HTML
 
