@@ -35,6 +35,7 @@ sequenceDiagram
 - Ability to create and login to an account
 - Players will pull data about other characters for the battles
 - Feature a randomized set of battles for characters to take on
+- https://api.openweathermap.org I will work out a way to make use of the apis available by openweather. Maybe the weather will have slight effects on the battle.
 
 ### Technologies
 
