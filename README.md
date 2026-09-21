@@ -70,9 +70,9 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] **Rented EC2 server** - I did not complete this part of the deliverable.
-- [ ] **Leased domain name** - I did not complete this part of the deliverable.
-- [ ] **Server accessible** from my domain: [https://yourdomainnamehere.click](https://yourdomainnamehere.click) - I did not complete this part of the deliverable.
+- [x] **Rented EC2 server** - I rented an EC2 server from Amazon Web Services
+- [x] **Leased domain name** - I successfully leased "andrewhokanson.link" from NameCheap
+- [x] **Server accessible** from my domain: [https://andrewhokanson.link](https://andrewhokanson.link) - I successfully hooked everything up and had a working page.
 
 ## 🚀 HTML deliverable
 
