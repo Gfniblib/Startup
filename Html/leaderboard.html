@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lorebound | High Scores</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">✦</span>
+        <span>Lorebound</span>
+      </div>
+      <nav class="nav">
+        <a href="index.html">Login</a>
+        <a href="game.html">Game</a>
+        <a href="leaderboard.html" class="active">High Scores</a>
+      </nav>
+    </header>
+
+    <main class="dashboard" style="grid-template-columns: 1.1fr 0.9fr;">
+      <section class="card">
+        <p class="label">Database data</p>
+        <h2>Character leaderboard</h2>
+
+        <table class="rank-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Hero</th>
+              <th>Class</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Aria Dawn</td>
+              <td>Rogue Archivist</td>
+              <td>14,800</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Kael Frost</td>
+              <td>Frostblade</td>
+              <td>13,250</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Nyra Bloom</td>
+              <td>Wild Sage</td>
+              <td>12,600</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Orin Vale</td>
+              <td>Guardian</td>
+              <td>11,920</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Selene Thorn</td>
+              <td>Moon Mage</td>
+              <td>11,210</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <aside class="websocket-panel">
+        <p class="label">WebSocket data</p>
+        <h2>Live events</h2>
+        <ul class="event-list">
+          <li><strong><span class="live-dot"></span>New game</strong><span>Selene Thorn started a run</span></li>
+          <li><strong><span class="live-dot"></span>Score jump</strong><span>Aria Dawn gained 600 points</span></li>
+          <li><strong><span class="live-dot"></span>Challenge</strong><span>Nyra Bloom cleared the final vault</span></li>
+          <li><strong><span class="live-dot"></span>Battle complete</strong><span>Kael Frost ended a hunt</span></li>
+        </ul>
+      </aside>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lorebound | Game</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">✦</span>
+        <span>Lorebound</span>
+      </div>
+      <nav class="nav">
+        <a href="index.html">Login</a>
+        <a href="game.html" class="active">Game</a>
+        <a href="leaderboard.html">High Scores</a>
+      </nav>
+    </header>
+
+    <main class="dashboard">
+      <section class="card board-shell">
+        <div class="game-header">
+          <div>
+            <p class="eyebrow">Application data</p>
+            <h2>Current battle arena</h2>
+          </div>
+          <span class="status-pill">Online</span>
+        </div>
+
+        <div class="game-board">
+          <svg class="board-svg" viewBox="0 0 420 220" aria-label="Lorebound game board placeholder">
+            <rect x="0" y="0" width="420" height="220" fill="#121b2d" rx="18"/>
+            <circle cx="105" cy="90" r="42" fill="#f87171" opacity="0.9"/>
+            <circle cx="215" cy="90" r="42" fill="#60a5fa" opacity="0.9"/>
+            <circle cx="105" cy="170" r="42" fill="#34d399" opacity="0.9"/>
+            <circle cx="215" cy="170" r="42" fill="#fbbf24" opacity="0.9"/>
+            <circle cx="330" cy="110" r="36" fill="#c084fc" opacity="0.9"/>
+            <path d="M 0 220 Q 210 150 420 220 L 420 220 L 0 220 Z" fill="rgba(139,92,246,0.18)"/>
+          </svg>
+        </div>
+
+        <div class="board-legend">
+          <span>Red: Attack</span>
+          <span>Blue: Magic</span>
+          <span>Green: Defend</span>
+          <span>Gold: Focus</span>
+        </div>
+
+        <div class="quote-box">
+          “Courage is the spark that turns a small flame into a legend.”
+        </div>
+      </section>
+
+      <aside class="data-card user-card">
+        <div>
+          <p class="label">Authentication</p>
+          <h2>Player profile</h2>
+        </div>
+
+        <div class="avatar">AD</div>
+
+        <div>
+          <p class="profile-name">Aria Dawn</p>
+          <p class="user-meta">Level 12 • Rogue Archivist</p>
+        </div>
+
+        <div>
+          <p class="label">Game status</p>
+          <p class="user-meta">Quest active: The Whispering Vault</p>
+        </div>
+      </aside>
+
+      <aside class="websocket-panel">
+        <p class="label">Database data</p>
+        <h2>High score board</h2>
+        <ul class="score-list">
+          <li><span class="score-rank">#1</span><strong>Aria Dawn</strong><span>14,800</span></li>
+          <li><span class="score-rank">#2</span><strong>Kael Frost</strong><span>13,250</span></li>
+          <li><span class="score-rank">#3</span><strong>Nyra Bloom</strong><span>12,600</span></li>
+          <li><span class="score-rank">#4</span><strong>Orin Vale</strong><span>11,920</span></li>
+        </ul>
+      </aside>
+
+      <section class="card websocket-panel" style="grid-column: 1 / -1;">
+        <p class="label">WebSocket data</p>
+        <h2>Live world updates</h2>
+        <ul class="event-list">
+          <li><strong><span class="live-dot"></span>Game started</strong><span>Kael Frost joined a new run</span></li>
+          <li><strong><span class="live-dot"></span>Score update</strong><span>Nyra Bloom reached 12,600</span></li>
+          <li><strong><span class="live-dot"></span>Match ended</strong><span>Orin Vale completed the vault challenge</span></li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>
