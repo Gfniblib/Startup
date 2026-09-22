@@ -22,6 +22,9 @@ Interesting things I have learned about AWS
 ## HTML
 
 Interesting things I have learned about HTML
+- I didn't previously know about the option to view the mobile version of the website in chrome on a laptop/pc
+- I learned about the meta tag in html which can help you to deal with correct character parsing to avoid missing or weird characters to show up.
+- I also learned about another part of the meta tag which helps to prepare the structure of mobile websites.
 
 ## React
 

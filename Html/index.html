@@ -4,65 +4,40 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lorebound | Login</title>
-    <link rel="stylesheet" href="styles.css" />
   </head>
-  <body class="auth-page">
-    <header class="topbar">
-      <div class="brand">
-        <span class="brand-mark">✦</span>
-        <span>Lorebound</span>
-      </div>
-      <nav class="nav">
-        <a href="index.html" class="active">Login</a>
+  <body>
+    <header>
+      <h1>Lorebound</h1>
+      <nav>
+        <a href="index.html">Login</a>
         <a href="game.html">Game</a>
         <a href="leaderboard.html">High Scores</a>
       </nav>
     </header>
 
-    <main class="login-shell">
-      <section class="login-panel">
-        <p class="eyebrow">Enter the realm</p>
-        <h1>Welcome back, adventurer</h1>
-        <p class="subtext">Create a new account or log in to continue your journey.</p>
+    <main>
+      <h2>Login</h2>
+      <p>Create a new account or log into your existing one.</p>
 
-        <form class="auth-form">
-          <label>
-            <span>Player name</span>
-            <input type="text" name="username" placeholder="Aria Dawn" />
-          </label>
+      <form>
+        <label>
+          Player name
+          <input type="text" name="username" placeholder="Aria Dawn" />
+        </label>
 
-          <label>
-            <span>Email</span>
-            <input type="email" name="email" placeholder="aria@lorebound.com" />
-          </label>
+        <label>
+          Email
+          <input type="email" name="email" placeholder="aria@lorebound.com" />
+        </label>
 
-          <label>
-            <span>Password</span>
-            <input type="password" name="password" placeholder="••••••••" />
-          </label>
+        <label>
+          Password
+          <input type="password" name="password" placeholder="Enter password" />
+        </label>
 
-          <div class="button-row">
-            <button type="submit" class="primary">Create account</button>
-            <button type="button" class="secondary">Login</button>
-          </div>
-        </form>
-      </section>
-
-      <aside class="feature-panel">
-        <div class="mini-card">
-          <p class="label">Authentication</p>
-          <h2>Player profile</h2>
-          <div class="avatar">AD</div>
-          <p class="profile-name">Aria Dawn</p>
-          <p class="profile-status">Logged in and ready for battle</p>
-        </div>
-
-        <div class="mini-card">
-          <p class="label">Application data</p>
-          <h2>Current quest</h2>
-          <p>"Courage is the spark that turns a small flame into a legend."</p>
-        </div>
-      </aside>
+        <button type="submit">Create account</button>
+        <button type="button">Login</button>
+      </form>
     </main>
   </body>
 </html>

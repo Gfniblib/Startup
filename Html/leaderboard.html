@@ -4,27 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lorebound | High Scores</title>
-    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <header class="topbar">
-      <div class="brand">
-        <span class="brand-mark">✦</span>
-        <span>Lorebound</span>
-      </div>
-      <nav class="nav">
+    <header>
+      <h1>Lorebound</h1>
+      <nav>
         <a href="index.html">Login</a>
         <a href="game.html">Game</a>
-        <a href="leaderboard.html" class="active">High Scores</a>
+        <a href="leaderboard.html">High Scores</a>
       </nav>
     </header>
 
-    <main class="dashboard" style="grid-template-columns: 1.1fr 0.9fr;">
-      <section class="card">
-        <p class="label">Database data</p>
-        <h2>Character leaderboard</h2>
+    <main>
+      <section>
+        <h2>High score character list</h2>
 
-        <table class="rank-table">
+        <table>
           <thead>
             <tr>
               <th>Rank</th>
@@ -58,26 +53,19 @@
               <td>Guardian</td>
               <td>11,920</td>
             </tr>
-            <tr>
-              <td>5</td>
-              <td>Selene Thorn</td>
-              <td>Moon Mage</td>
-              <td>11,210</td>
-            </tr>
           </tbody>
         </table>
       </section>
 
-      <aside class="websocket-panel">
-        <p class="label">WebSocket data</p>
-        <h2>Live events</h2>
-        <ul class="event-list">
-          <li><strong><span class="live-dot"></span>New game</strong><span>Selene Thorn started a run</span></li>
-          <li><strong><span class="live-dot"></span>Score jump</strong><span>Aria Dawn gained 600 points</span></li>
-          <li><strong><span class="live-dot"></span>Challenge</strong><span>Nyra Bloom cleared the final vault</span></li>
-          <li><strong><span class="live-dot"></span>Battle complete</strong><span>Kael Frost ended a hunt</span></li>
+      <section>
+        <h2>Live updates</h2>
+        <ul>
+          <li>New game: Selene Thorn started a run.</li>
+          <li>Score jump: Aria Dawn gained 600 points.</li>
+          <li>Challenge complete: Nyra Bloom cleared the vault.</li>
+          <li>Battle complete: Kael Frost ended a run.</li>
         </ul>
-      </aside>
+      </section>
     </main>
   </body>
 </html>
