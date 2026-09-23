@@ -26,6 +26,7 @@ Interesting things I have learned about HTML
 - I learned about the meta tag in html which can help you to deal with correct character parsing to avoid missing or weird characters to show up.
 - I also learned about another part of the meta tag which helps to prepare the structure of mobile websites.
 - You can do some in line css to clean things up for elements that are unique and don't need to have a class defined.
+- learned about the silly little fieldset tag which creates a nice little box around a group of elements for a perfect 90s style website.
 
 ## React
 

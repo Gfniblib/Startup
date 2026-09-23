@@ -29,30 +29,39 @@
 
     <main>
       <h2>Login</h2>
-      <p>Create a new account or log into your existing one.</p>
-
-      <form>
-        <label>
-          Player name
-          <input type="text" name="username" placeholder="Aria Dawn" />
-        </label>
-
-        <label>
-          Email
-          <input type="email" name="email" placeholder="aria@lorebound.com" />
-        </label>
-
-        <label>
-          Password
-          <input type="password" name="password" placeholder="Enter password" />
-        </label>
-
-        <button type="submit">Create account</button>
-        <button type="button">Login</button>
-      </form>
+      <p>Create a new account or login</p>
+      <fieldset>
+        <legend>Account Information</legend>
+        <form>
+          <table>
+            <tr>
+              <td>
+                <label>
+                  Player name
+                  <input type="text" name="username" placeholder="Aria Dawn" />
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label>
+                  Password
+                  <input type="password" name="password" placeholder="Enter password" />
+                </label>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <button type="submit">Create account</button>
+                <button type="button">Login</button>
+              </td>
+            </tr>
+          </table>
+        </form>
+      </fieldset>
     </main>
   </body>
   <footer style="position: fixed; bottom: 0; left: 0;width: 100%; background-color: #290c5c; color: rgb(244, 243, 249); text-align: center;">
-    <p>&copy; 2026 Lorebound Jk no copyrights here. No rights reserved.</p>
+    <p>&copy; 2026 Lorebound no copyrights here. No rights reserved.</p>
   </footer>
 </html>
