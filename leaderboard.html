@@ -4,89 +4,75 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lorebound | High Scores</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <header>
-      <table width="100%">
-        <tr>
-          <td>
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <h1 style="margin: 0;">Lorebound</h1>
-              <img src="images/dogeMorionHat.jpg" alt="Doge Morion Hat" width="60" height="60" />
-            </div>
-          </td>
-          <td align="center">
-            <p>A roguelike by Andrew Hokanson</p>
-          </td>  
-          <td align="right">
-            <a href="https://github.com/Gfniblib/Startup">Github Repository</a>
-          </td>  
-        </tr>
-      </table>
-      <nav>
-        <a href="index.html">Login</a>
-        <a href="game.html">Game</a>
-        <a href="leaderboard.html">High Scores</a>
+    <header class="site-header py-3">
+      <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+          <div class="d-flex align-items-center gap-3">
+            <h1 class="h2 mb-0">Lorebound</h1>
+            <img class="brand-image" src="images/dogeMorionHat.jpg" alt="Doge Morion Hat" />
+          </div>
+          <p class="tagline mb-0">A roguelike by Andrew Hokanson</p>
+          <a href="https://github.com/Gfniblib/Startup">Github Repository</a>
+        </div>
+      </div>
+      <nav class="container mt-3" aria-label="Main navigation">
+        <div class="d-flex flex-wrap gap-3">
+          <a href="index.html">Login</a>
+          <a href="game.html">Game</a>
+          <a href="leaderboard.html">High Scores</a>
+        </div>
       </nav>
     </header>
 
-    <main style="display: block;">
-      <aside style="float: right; border: 1px solid #ccc; padding: 10px; width: 220px; margin: 0 0 20px 20px;">
-        <h3>Logged in as</h3>
-        <p>JohnDoe</p>
-      </aside>
+    <main class="container page-content">
+      <div class="row g-4">
+        <div class="col-12 col-lg-8">
+          <section class="content-section">
+            <h2>Heroes of Legend</h2>
+            <p>Placeholder static leaderboard. Eventually will pull data from the database.</p>
+            <div class="table-responsive">
+              <table class="table table-striped table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th scope="col">Rank</th>
+                    <th scope="col">Hero</th>
+                    <th scope="col">Class</th>
+                    <th scope="col">Score</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>1</td><td>Aria Dawn</td><td>Rogue Archivist</td><td>14,800</td></tr>
+                  <tr><td>2</td><td>Kael Frost</td><td>Frostblade</td><td>13,250</td></tr>
+                  <tr><td>3</td><td>Nyra Bloom</td><td>Wild Sage</td><td>12,600</td></tr>
+                  <tr><td>4</td><td>Orin Vale</td><td>Guardian</td><td>11,920</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
 
-      <section>
-        <h2>Heroes of Legend</h2>
-        <p>Placeholder static leaderboard. Eventually will pull data from the database.</p>
-        <table>
-          <thead>
-            <tr>
-              <th>Rank</th>
-              <th>Hero</th>
-              <th>Class</th>
-              <th>Score</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td>Aria Dawn</td>
-              <td>Rogue Archivist</td>
-              <td>14,800</td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>Kael Frost</td>
-              <td>Frostblade</td>
-              <td>13,250</td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>Nyra Bloom</td>
-              <td>Wild Sage</td>
-              <td>12,600</td>
-            </tr>
-            <tr>
-              <td>4</td>
-              <td>Orin Vale</td>
-              <td>Guardian</td>
-              <td>11,920</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-
-      <section>
-        <h2>Live updates</h2>
-        <p>These updates will be replaced with real-time data from the game server.</p>
-        <ul>
-          <li>New game: Selene Thorn started a run.</li>
-          <li>Score jump: Aria Dawn gained 600 points.</li>
-          <li>Challenge complete: Nyra Bloom cleared the vault.</li>
-          <li>Battle complete: Kael Frost ended a run.</li>
-        </ul>
-      </section>
+          <section class="content-section">
+            <h2>Live updates</h2>
+            <p>These updates will be replaced with real-time data from the game server.</p>
+            <ul class="mb-0">
+              <li>New game: Selene Thorn started a run.</li>
+              <li>Score jump: Aria Dawn gained 600 points.</li>
+              <li>Challenge complete: Nyra Bloom cleared the vault.</li>
+              <li>Battle complete: Kael Frost ended a run.</li>
+            </ul>
+          </section>
+        </div>
+        <aside class="col-12 col-lg-4">
+          <div class="account-panel">
+            <h3 class="h5">Logged in as</h3>
+            <p class="mb-0">JohnDoe</p>
+          </div>
+        </aside>
+      </div>
     </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   </body>
 </html>

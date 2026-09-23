@@ -4,65 +4,68 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lorebound | Game</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <header>
-      <table width="100%">
-        <tr>
-          <td>
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <h1 style="margin: 0;">Lorebound</h1>
-              <img src="images/dogeMorionHat.jpg" alt="Doge Morion Hat" width="60" height="60" />
-            </div>
-          </td>
-          <td align="center">
-            <p>A roguelike by Andrew Hokanson</p>
-          </td>  
-          <td align="right">
-            <a href="https://github.com/Gfniblib/Startup">Github Repository</a>
-          </td>  
-        </tr>
-      </table>
-      <nav>
-        <a href="index.html">Login</a>
-        <a href="game.html">Game</a>
-        <a href="leaderboard.html">High Scores</a>
+    <header class="site-header py-3">
+      <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+          <div class="d-flex align-items-center gap-3">
+            <h1 class="h2 mb-0">Lorebound</h1>
+            <img class="brand-image" src="images/dogeMorionHat.jpg" alt="Doge Morion Hat" />
+          </div>
+          <p class="tagline mb-0">A roguelike by Andrew Hokanson</p>
+          <a href="https://github.com/Gfniblib/Startup">Github Repository</a>
+        </div>
+      </div>
+      <nav class="container mt-3" aria-label="Main navigation">
+        <div class="d-flex flex-wrap gap-3">
+          <a href="index.html">Login</a>
+          <a href="game.html">Game</a>
+          <a href="leaderboard.html">High Scores</a>
+        </div>
       </nav>
     </header>
 
-    <main style="display: block;">
-      <aside style="float: right; border: 1px solid #ccc; padding: 10px; width: 220px; margin: 0 0 20px 20px;">
-        <h3>Logged in as</h3>
-        <p>JohnDoe</p>
-      </aside>
+    <main class="container page-content">
+      <div class="row g-4">
+        <div class="col-12 col-lg-8">
+          <section class="content-section">
+            <h2>Today's Weather: Sunny</h2>
+            <p>Weather effects on today's battles:</p>
+            <ul>
+              <li>Temperature: 75°F</li>
+              <li>Wind: 10 mph</li>
+              <li>Fire monsters will be stronger</li>
+              <li>Water skills and spells will be weaker</li>
+              <li>These values are just placeholders and will be replaced by live data from OpenWeather API</li>
+            </ul>
+          </section>
 
-      <section>
-        <h2>Today's Weather: Sunny</h2>
-        <p>Weather effects on today's battles:</p>
-        <ul>
-          <li>Temperature: 75°F</li>
-          <li>Wind: 10 mph</li>
-          <li>Fire monsters will be stronger</li>
-          <li>Water skills and spells will be weaker</li>
-          <li>These values are just placeholders and will be replaced by live data from OpenWeather API</li>
-        </ul>
-      </section>
+          <section class="content-section">
+            <p>This button will be replaced to show up when the message is received via websocket</p>
+            <div id="notification" class="alert alert-success d-none" role="status">
+              Your character helped someone else out!
+            </div>
+            <button class="btn btn-primary" onclick="document.getElementById('notification').classList.remove('d-none')">
+              Websocket Live Update Placeholder.
+            </button>
+          </section>
 
-      <section>
-        <p>This button will be replaced to show up when the message is received via websocket</p>
-
-        <div id="notification" style="display:none; border:1px solid #ccc; padding:10px; margin-top:10px;">
-          Your character helped someone else out!
+          <section class="content-section">
+            <p>Game placeholder eventually application will go in this general area</p>
+            <img class="game-image" src="./images/gameWIP.jpg" alt="placeholder game image" />
+          </section>
         </div>
-        <button onclick="document.getElementById('notification').style.display='block'">
-          Websocket Live Update Placeholder.
-        </button>
-      </section>
-
-      <section>
-        <p>Game placeholder eventually application will go in this general area</p>
-        <img src="./images/gameWIP.jpg" alt="placeholder game image">
-      </section>
+        <aside class="col-12 col-lg-4">
+          <div class="account-panel">
+            <h3 class="h5">Logged in as</h3>
+            <p class="mb-0">JohnDoe</p>
+          </div>
+        </aside>
+      </div>
     </main>
   </body>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </html>

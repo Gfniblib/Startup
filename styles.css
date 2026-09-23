@@ -1,0 +1,69 @@
+body {
+  background: linear-gradient(135deg, #f8f9fa 0%, #eef2ff 100%);
+  color: #202938;
+  min-height: 100vh;
+}
+
+.site-header {
+  background: #290c5c;
+  color: #ffffff;
+}
+
+.site-header a {
+  color: #ffffff;
+}
+
+.brand-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.page-content {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.content-section,
+.account-panel,
+.login-panel {
+  background: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.75rem;
+  box-shadow: 0 0.5rem 1.5rem rgba(41, 12, 92, 0.08);
+}
+
+.content-section {
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.account-panel {
+  padding: 1rem;
+}
+
+.game-image {
+  width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+}
+
+.site-footer {
+  background: #290c5c;
+  color: #f4f3f9;
+}
+
+@media (max-width: 575.98px) {
+  .site-header .tagline {
+    display: none;
+  }
+
+  .page-content {
+    padding-top: 1rem;
+  }
+
+  .content-section {
+    padding: 1rem;
+  }
+}
