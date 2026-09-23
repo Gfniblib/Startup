@@ -1,4 +1,4 @@
-# Web RPG
+# Lorebound RPG
 
 [My Notes](notes.md)
 
@@ -78,16 +78,16 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
-- [ ] **HTML pages** - I did not complete this part of the deliverable.
-- [ ] **Proper HTML element usage** - I did not complete this part of the deliverable.
-- [ ] **Links** - I did not complete this part of the deliverable.
-- [ ] **Text** - I did not complete this part of the deliverable.
-- [ ] **3rd party API placeholder** - I did not complete this part of the deliverable.
-- [ ] **Images** - I did not complete this part of the deliverable.
-- [ ] **Login placeholder** - I did not complete this part of the deliverable.
-- [ ] **DB data placeholder** - I did not complete this part of the deliverable.
-- [ ] **WebSocket placeholder** - I did not complete this part of the deliverable.
+- [x] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
+- [x] **HTML pages** - I have two pages besides the original index.html. Each of them are as I planned out in my mockup.
+- [x] **Proper HTML element usage** - I branched out and used a variety of html elements and did my best to have structure despite not much css.
+- [x] **Links** - I added a link to my github repository that is quite visible on the html blank white background. The pages are also linked together and easily navigatable from the navbar.
+- [x] **Text** - I believe all of my text whether button, list, or whatever else to be explanatory and helpful to the player. Some are just there to point out the placeholders for scannability. I also added text for when an image fails to load for all my users in africa (professor's words not mine).
+- [x] **3rd party API placeholder** - I added an informational list to explain to the player how the current weather will effect gameplay. It is a placeholder for when the values will be automatically pulled from openweather
+- [x] **Images** - I added one image to be part of the placeholder for the main application as I haven't written it yet. I also added a silly little image as a kind of logo for the game.
+- [x] **Login placeholder** - I added a little placeholder login/create account element in the login/root page. 
+- [x] **DB data placeholder** - I created a high score page with a table placeholder which will eventually use the database to get the information.
+- [x] **WebSocket placeholder** - I created a placeholder button which shows the alert system I would like to use to notify the player if their character helps out someone else in battle. 
 
 ## 🚀 CSS deliverable
 
