@@ -44,18 +44,22 @@
           <li>Water based skills and spells will be weaker</li>
           <li>These are just placeholders and will adapt based on the weather API calls from openweather</li>
         </ul>
-        <p>Game placeholder</p>
-
-        <img src="./images/gameWIP.jpg" alt="placeholder game image">
       </section>
 
       <section>
-        <h2>WebSocket data</h2>
-        <ul>
-          <li>Game started: Kael Frost joined a new run.</li>
-          <li>Score update: Nyra Bloom reached 12,600.</li>
-          <li>Match ended: Orin Vale completed the vault challenge.</li>
-        </ul>
+        <p>This button will be replaced to show up when the message is received via websocket</p>
+        
+        <div id="notification" style="display:none; border:1px solid #ccc; padding:10px; margin-top:10px;">
+          Your character helped someone else out!
+        </div>
+        <button onclick="document.getElementById('notification').style.display='block'">
+          Websocket Live Update Placeholder.
+        </button>
+      </section>
+
+      <section>
+        <p>Game placeholder eventually application will go in this general area</p>
+        <img src="./images/gameWIP.jpg" alt="placeholder game image">
       </section>
     </main>
   </body>
