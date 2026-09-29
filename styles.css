@@ -83,4 +83,12 @@ body {
   .content-section {
     padding: 1rem;
   }
+
+  .game-layout .content-section {
+    margin-bottom: 0;
+  }
+
+  .leaderboard-layout .content-section {
+    margin-bottom: 0;
+  }
 }
