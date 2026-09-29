@@ -19,12 +19,22 @@ body {
   color: #ffffff;
 }
 
-.brand-image {
+.brand-image-frame {
   width: 60px;
   height: 60px;
-  object-fit: contain;
   border-radius: 50%;
-  padding: 0px;
+  background: #ffffff;
+  display: grid;
+  flex: 0 0 60px;
+  overflow: hidden;
+  place-items: center;
+}
+
+.brand-image {
+  width: 85%;
+  height: 85%;
+  object-fit: contain;
+  object-position: +2px -1px;
 }
 
 .page-content {
