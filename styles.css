@@ -16,8 +16,9 @@ body {
 .brand-image {
   width: 60px;
   height: 60px;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: 50%;
+  padding: 0px;
 }
 
 .page-content {
