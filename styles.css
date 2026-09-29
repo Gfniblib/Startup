@@ -1,7 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap');
+
 body {
-  background: linear-gradient(135deg, #f8f9fa 0%, #eef2ff 100%);
+  background: linear-gradient(135deg, #c6cdd4 0%, #f2f4fc 100%);
   color: #202938;
   min-height: 100vh;
+}
+
+.site-title {
+  font-family: 'Pixelify Sans', sans-serif;
 }
 
 .site-header {

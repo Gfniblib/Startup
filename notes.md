@@ -28,6 +28,11 @@ Interesting things I have learned about HTML
 - You can do some in line css to clean things up for elements that are unique and don't need to have a class defined.
 - learned about the silly little fieldset tag which creates a nice little box around a group of elements for a perfect 90s style website.
 
+## CSS
+
+Learned about the rem measurement which is apparently good practice for giving your site a dynamic response to people who need larger text size. Helps to scale the page when someone using something like ctrl +.
+
+
 ## React
 
 Interesting things I have learned about React
