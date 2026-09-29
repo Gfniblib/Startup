@@ -28,9 +28,16 @@ Interesting things I have learned about HTML
 - You can do some in line css to clean things up for elements that are unique and don't need to have a class defined.
 - learned about the silly little fieldset tag which creates a nice little box around a group of elements for a perfect 90s style website.
 
+The title tag is pretty neat so that people can get a quick read of what your website is through the tabs at the top.
+
 ## CSS
 
 Learned about the rem measurement which is apparently good practice for giving your site a dynamic response to people who need larger text size. Helps to scale the page when someone using something like ctrl +.
+
+Bootstrap
+- Learned about the shorthand py and px for padding elements on the x or y axis
+- Mobile versions use a 12 collumn system. Can use lg (large tag) to plan out for desktop access
+- Another shorthand g referring to a x and y margin applied to the flexbox grid layout
 
 
 ## React
