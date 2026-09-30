@@ -93,13 +93,13 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
-- [ ] **Visually appealing colors and layout. No overflowing elements.** - I did not complete this part of the deliverable.
-- [ ] **Use of a CSS framework** - I did not complete this part of the deliverable.
-- [ ] **All visual elements styled using CSS** - I did not complete this part of the deliverable.
-- [ ] **Responsive to window resizing using flexbox and/or grid display** - I did not complete this part of the deliverable.
-- [ ] **Use of a imported font** - I did not complete this part of the deliverable.
-- [ ] **Use of different types of selectors including element, class, ID, and pseudo selectors** - I did not complete this part of the deliverable.
+- [x] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
+- [x] **Visually appealing colors and layout. No overflowing elements.** - Unless I'm colorblind I think the sites colors are okay. The elements are hands off and separated by a wall.
+- [x] **Use of a CSS framework** - I made use of bootstrap where I could!
+- [x] **All visual elements styled using CSS** - Every visible element has some CSS or a bootstrap automated style.
+- [x] **Responsive to window resizing using flexbox and/or grid display** - Made use of flexbox to plan out the different layouts on pc and mobile. Even for the really thin screens.
+- [x] **Use of a imported font** - I imported a silly pixel fantasy font for the title.
+- [x] **Use of different types of selectors including element, class, ID, and pseudo selectors** - I tried out the pseudo and ID tags to make some things work, but mainly used element and class tags.
 
 ## 🚀 React part 1: Routing deliverable
 
