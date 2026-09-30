@@ -32,7 +32,8 @@ The title tag is pretty neat so that people can get a quick read of what your we
 
 ## CSS
 
-Learned about the rem measurement which is apparently good practice for giving your site a dynamic response to people who need larger text size. Helps to scale the page when someone using something like ctrl +.
+- Learned about the rem measurement which is apparently good practice for giving your site a dynamic response to people who need larger text size. Helps to scale the page when someone using something like ctrl +.
+- realized you should probably have different css sheets for user readability.
 
 Bootstrap
 - Learned about the shorthand py and px for padding elements on the x or y axis
