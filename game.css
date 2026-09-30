@@ -4,6 +4,10 @@
   border-radius: 0.5rem;
 }
 
+#notification {
+  font-weight: bold;
+}
+
 @media (max-width: 575.98px) {
   .game-layout .content-section {
     margin-bottom: 0;

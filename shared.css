@@ -15,8 +15,9 @@ body {
   color: #ffffff;
 }
 
-.site-header a {
-  color: #ffffff;
+.site-header a:hover{
+  color: #ffe08a;
+
 }
 
 .brand-image-frame {
