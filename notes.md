@@ -45,3 +45,4 @@ Bootstrap
 
 Interesting things I have learned about React
 - You should create a gitignore to not bloat your project and have it contain only your code
+- Make sure to check all of the html tags that conflict with react before you start troubleshooting errors

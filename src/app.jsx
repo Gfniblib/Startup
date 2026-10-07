@@ -18,7 +18,7 @@ export default function App() {
                                 <div className="d-flex align-items-center gap-2">
                                     <h1 className="h2 mb-0 site-title">Lorebound</h1>
                                     <div className="brand-image-frame">
-                                        <img className="brand-image" src="images/dogeMorionHat.jpg" alt="Doge Morion Hat" />
+                                        <img className="brand-image" src="/dogeMorionHat.jpg" alt="Doge Morion Hat" />
                                     </div>
                                 </div>
                                 <nav aria-label="Main navigation">

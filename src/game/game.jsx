@@ -3,12 +3,12 @@ import './game.css';
 
 export function Game() {
   return (
-    <main className="container-fluid page-content">
+    <main className="container page-content">
       <div className="row gy-3 gx-lg-3 gy-lg-3 game-layout">
         <div className="col-12 col-lg-9 order-2 order-lg-1">
           <section className="content-section">
             <p>Game placeholder eventually application will go in this general area</p>
-            <img className="game-image" src="./images/gameWIP.jpg" alt="placeholder game image" />
+            <img className="game-image" src="/gameWIP.jpg" alt="placeholder game image" />
           </section>
         </div>
 

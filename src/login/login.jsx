@@ -3,7 +3,7 @@ import './login.css';
 
 export function Login() {
   return (
-    <main className="container-fluid page-content">
+    <main className="container page-content">
       <div className="row gy-3 gx-lg-3 gy-lg-3">
         <div className="col-12 col-lg-9 order-2 order-lg-1">
           <div className="login-panel p-4">
