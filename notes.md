@@ -44,3 +44,4 @@ Bootstrap
 ## React
 
 Interesting things I have learned about React
+- You should create a gitignore to not bloat your project and have it contain only your code
