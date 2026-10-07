@@ -1,9 +1,10 @@
 import React from 'react';
 import './leaderboard.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 export function Leaderboard() {
   return (
-    <main className="container-fluid text-center">
+    <main className="container page-content">
       <div className="row gy-3 gx-lg-3 gy-lg-3 leaderboard-layout">
         <div className="col-12 col-lg-9 order-2 order-lg-1">
           <section className="content-section">

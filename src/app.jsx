@@ -9,7 +9,7 @@ import { Leaderboard } from './leaderboard/leaderboard';
 export default function App() {
   return (
     <BrowserRouter>
-        <div className="body bg-dark text-light">
+        <div className="body">
             <header className="site-header py-3">
                 <div className="container">
                     <div className="row align-items-center gy-3">
@@ -58,5 +58,5 @@ export default function App() {
 }
 
 function NotFound() {
-  return <main className="container-fluid bg-secondary text-center">404: Return to sender. Address unknown.</main>;
+  return <main className="container-fluid page-content bg-secondary text-center">404: Return to sender. Address unknown.</main>;
 }

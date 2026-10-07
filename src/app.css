@@ -6,6 +6,12 @@
   min-height: 100vh;
 }
 
+.nav-link {
+  text-decoration: underline;
+  padding: 0.5rem 1rem;
+  color: rgb(13, 110, 253);
+}
+
 .site-title {
   font-family: 'Pixelify Sans', sans-serif;
 }
@@ -15,9 +21,14 @@
   color: #ffffff;
 }
 
-.site-header a:hover{
-  color: #ffe08a;
+.site-header a,
+.site-header a:visited {
+  color: rgb(13, 110, 253);
+}
 
+.site-header a:hover,
+.site-header a:focus-visible {
+  color: #ffe08a;
 }
 
 .site-header nav a {
