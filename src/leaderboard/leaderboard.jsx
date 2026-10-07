@@ -1,9 +1,56 @@
 import React from 'react';
+import './leaderboard.css';
 
 export function Leaderboard() {
   return (
-    <main className="container-fluid bg-secondary text-center">
-      <div>leaderboard displayed here</div>
+    <main className="container-fluid text-center">
+      <div className="row gy-3 gx-lg-3 gy-lg-3 leaderboard-layout">
+        <div className="col-12 col-lg-9 order-2 order-lg-1">
+          <section className="content-section">
+            <h2>Heroes of Legend</h2>
+            <p>Placeholder static leaderboard. Eventually will pull data from the database.</p>
+            <div className="table-responsive">
+              <table className="table table-striped table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th scope="col">Rank</th>
+                    <th scope="col">Hero</th>
+                    <th scope="col">Class</th>
+                    <th scope="col">Score</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>1</td><td>Aria Dawn</td><td>Rogue Archivist</td><td>14,800</td></tr>
+                  <tr><td>2</td><td>Kael Frost</td><td>Frostblade</td><td>13,250</td></tr>
+                  <tr><td>3</td><td>Nyra Bloom</td><td>Wild Sage</td><td>12,600</td></tr>
+                  <tr><td>4</td><td>Orin Vale</td><td>Guardian</td><td>11,920</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+        </div>
+
+        <aside className="col-12 col-lg-3 order-1 order-lg-2">
+          <div className="account-panel">
+            <h3 className="h5">Logged in as:</h3>
+            <p className="mb-0">JohnDoe</p>
+          </div>
+        </aside>
+
+        <div className="col-12 col-lg-9 order-3 order-lg-3">
+          <section className="content-section">
+            <h2>Live updates</h2>
+            <p>These updates will be replaced with real-time data from the game server.</p>
+            <ul className="mb-0">
+              <li>New game: Selene Thorn started a run.</li>
+              <li>Score jump: Aria Dawn gained 600 points.</li>
+              <li>Challenge complete: Nyra Bloom cleared the vault.</li>
+              <li>Battle complete: Kael Frost ended a run.</li>
+            </ul>
+          </section>
+        </div>
+      </div>
     </main>
   );
 }
