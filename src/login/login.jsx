@@ -1,30 +1,31 @@
 import React from 'react';
 import './login.css';
+import { Button, Card, Col, Form, Row } from 'react-bootstrap';
 
 export function Login() {
   return (
-    <div className="row gy-3 gx-lg-3 gy-lg-3">
-      <div className="col-12">
-        <div className="login-panel p-4">
+    <Row className="gy-3 gx-lg-3 gy-lg-3">
+      <Col xs={12}>
+        <Card className="login-panel p-4">
           <h2>Login</h2>
           <p>Create a new account or login</p>
           <fieldset>
             <legend className="h5">Account Information</legend>
-            <form>
-              <div className="mb-3">
-                <label className="form-label" htmlFor="username">Player name</label>
-                <input className="form-control" type="text" id="username" name="username" placeholder="Username" />
-              </div>
-              <div className="mb-3">
-                <label className="form-label" htmlFor="password">Password</label>
-                <input className="form-control" type="password" id="password" name="password" placeholder="Enter password" />
-              </div>
-              <button className="btn btn-primary me-2" type="submit">Create account</button>
-              <button className="btn btn-outline-primary" type="button">Login</button>
-            </form>
+            <Form>
+              <Form.Group className="mb-3" controlId="username">
+                <Form.Label>Player name</Form.Label>
+                <Form.Control type="text" name="username" placeholder="Username" />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="password">
+                <Form.Label>Password</Form.Label>
+                <Form.Control type="password" name="password" placeholder="Enter password" />
+              </Form.Group>
+              <Button className="me-2" variant="primary" type="submit">Create account</Button>
+              <Button variant="outline-primary" type="button">Login</Button>
+            </Form>
           </fieldset>
-        </div>
-      </div>
-    </div>
+        </Card>
+      </Col>
+    </Row>
   );
 }

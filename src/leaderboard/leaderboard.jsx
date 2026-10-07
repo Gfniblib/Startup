@@ -1,17 +1,16 @@
 import React from 'react';
 import './leaderboard.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { Card, Col, Row, Table } from 'react-bootstrap';
 
 export function Leaderboard() {
   return (
     <div>
-      <div className="row gy-3 gx-lg-3 gy-lg-3 leaderboard-layout">
-        <div className="col-12">
-          <section className="content-section">
+      <Row className="gy-3 gx-lg-3 gy-lg-3 leaderboard-layout">
+        <Col xs={12}>
+          <Card as="section" className="content-section">
             <h2>Heroes of Legend</h2>
             <p>Placeholder static leaderboard. Eventually will pull data from the database.</p>
-            <div className="table-responsive">
-              <table className="table table-striped table-hover align-middle mb-0">
+            <Table striped hover responsive className="align-middle mb-0">
                 <thead>
                   <tr>
                     <th scope="col">Rank</th>
@@ -26,14 +25,13 @@ export function Leaderboard() {
                   <tr><td>3</td><td>Nyra Bloom</td><td>Wild Sage</td><td>12,600</td></tr>
                   <tr><td>4</td><td>Orin Vale</td><td>Guardian</td><td>11,920</td></tr>
                 </tbody>
-              </table>
-            </div>
-          </section>
+            </Table>
+          </Card>
 
-        </div>
+        </Col>
 
-        <div className="col-12">
-          <section className="content-section">
+        <Col xs={12}>
+          <Card as="section" className="content-section">
             <h2>Live updates</h2>
             <p>These updates will be replaced with real-time data from the game server.</p>
             <ul className="mb-0">
@@ -42,9 +40,9 @@ export function Leaderboard() {
               <li>Challenge complete: Nyra Bloom cleared the vault.</li>
               <li>Battle complete: Kael Frost ended a run.</li>
             </ul>
-          </section>
-        </div>
-      </div>
+          </Card>
+        </Col>
+      </Row>
     </div>
   );
 }
