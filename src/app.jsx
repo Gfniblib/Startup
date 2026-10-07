@@ -40,13 +40,23 @@ export default function App() {
                 </div>
             </header>
 
-            <main className="flex-grow-1">
-            <Routes>
-                <Route path="/" element={<Login />} />
-                <Route path="/game" element={<Game />} />
-                <Route path="/leaderboard" element={<Leaderboard />} />
-                <Route path="*" element={<NotFound />} />
-            </Routes>
+            <main className="container page-content flex-grow-1">
+                <div className="row gy-3 gx-lg-3 gy-lg-3">
+                    <div className="col-12 col-lg-9 order-2 order-lg-1">
+                        <Routes>
+                            <Route path="/" element={<Login />} />
+                            <Route path="/game" element={<Game />} />
+                            <Route path="/leaderboard" element={<Leaderboard />} />
+                            <Route path="*" element={<NotFound />} />
+                        </Routes>
+                    </div>
+                    <aside className="col-12 col-lg-3 order-1 order-lg-2">
+                        <div className="account-panel">
+                            <h3 className="h5">Logged in as:</h3>
+                            <p className="mb-0">JohnDoe</p>
+                        </div>
+                    </aside>
+                </div>
             </main>
 
             <footer className="site-footer text-center py-3">
@@ -58,5 +68,5 @@ export default function App() {
 }
 
 function NotFound() {
-  return <main className="container-fluid page-content bg-secondary text-center">404: Return to sender. Address unknown.</main>;
+  return <div className="bg-secondary text-center">404: Return to sender. Address unknown.</div>;
 }

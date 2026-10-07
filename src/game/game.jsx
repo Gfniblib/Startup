@@ -3,23 +3,16 @@ import './game.css';
 
 export function Game() {
   return (
-    <main className="container page-content">
+    <div>
       <div className="row gy-3 gx-lg-3 gy-lg-3 game-layout">
-        <div className="col-12 col-lg-9 order-2 order-lg-1">
+        <div className="col-12">
           <section className="content-section">
             <p>Game placeholder eventually application will go in this general area</p>
             <img className="game-image" src="/gameWIP.jpg" alt="placeholder game image" />
           </section>
         </div>
 
-        <aside className="col-12 col-lg-3 order-1 order-lg-2">
-          <div className="account-panel">
-            <h3 className="h5">Logged in as:</h3>
-            <p className="mb-0">JohnDoe</p>
-          </div>
-        </aside>
-
-        <div className="col-12 col-lg-9 order-3 order-lg-3">
+        <div className="col-12">
           <section className="content-section">
             <h2>Today's Weather: Sunny</h2>
             <p>Weather effects on today's battles:</p>
@@ -33,7 +26,7 @@ export function Game() {
           </section>  
         </div>
 
-        <div className="col-12 col-lg-9 order-4 order-lg-4">
+        <div className="col-12">
           <section className="content-section">
             <p>This button will be replaced to show up when the message is received via websocket</p>
             <div id="notification" className="alert alert-success d-none" role="status">
@@ -46,6 +39,6 @@ export function Game() {
         </div>
 
       </div>
-    </main>
+    </div>
   );
 }

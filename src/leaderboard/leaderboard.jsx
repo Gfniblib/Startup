@@ -4,9 +4,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 export function Leaderboard() {
   return (
-    <main className="container page-content">
+    <div>
       <div className="row gy-3 gx-lg-3 gy-lg-3 leaderboard-layout">
-        <div className="col-12 col-lg-9 order-2 order-lg-1">
+        <div className="col-12">
           <section className="content-section">
             <h2>Heroes of Legend</h2>
             <p>Placeholder static leaderboard. Eventually will pull data from the database.</p>
@@ -32,14 +32,7 @@ export function Leaderboard() {
 
         </div>
 
-        <aside className="col-12 col-lg-3 order-1 order-lg-2">
-          <div className="account-panel">
-            <h3 className="h5">Logged in as:</h3>
-            <p className="mb-0">JohnDoe</p>
-          </div>
-        </aside>
-
-        <div className="col-12 col-lg-9 order-3 order-lg-3">
+        <div className="col-12">
           <section className="content-section">
             <h2>Live updates</h2>
             <p>These updates will be replaced with real-time data from the game server.</p>
@@ -52,6 +45,6 @@ export function Leaderboard() {
           </section>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
