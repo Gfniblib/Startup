@@ -9,7 +9,7 @@ import { Leaderboard } from './leaderboard/leaderboard';
 export default function App() {
   return (
     <BrowserRouter>
-        <div className="body">
+        <div className="body d-flex flex-column min-vh-100">
             <header className="site-header py-3">
                 <div className="container">
                     <div className="row align-items-center gy-3">
@@ -40,7 +40,7 @@ export default function App() {
                 </div>
             </header>
 
-            <main>
+            <main className="flex-grow-1">
             <Routes>
                 <Route path="/" element={<Login />} />
                 <Route path="/game" element={<Game />} />
