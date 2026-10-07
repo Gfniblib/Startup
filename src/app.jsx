@@ -23,7 +23,7 @@ export default function App() {
                                 </div>
                                 <nav aria-label="Main navigation">
                                     <div className="d-flex flex-nowrap gap-2">
-                                    <NavLink className="nav-link" to="">Login</NavLink>
+                                    <NavLink className="nav-link" to="/">Login</NavLink>
                                     <NavLink className="nav-link" to="game">Game</NavLink>
                                     <NavLink className="nav-link" to="leaderboard">High Scores</NavLink>
                                     </div>
