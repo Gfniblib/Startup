@@ -13,11 +13,11 @@ export function Login() {
               <legend className="h5">Account Information</legend>
               <form>
                 <div className="mb-3">
-                  <label className="form-label" for="username">Player name</label>
+                  <label className="form-label" htmlFor="username">Player name</label>
                   <input className="form-control" type="text" id="username" name="username" placeholder="Username" />
                 </div>
                 <div className="mb-3">
-                  <label className="form-label" for="password">Password</label>
+                  <label className="form-label" htmlFor="password">Password</label>
                   <input className="form-control" type="password" id="password" name="password" placeholder="Enter password" />
                 </div>
                 <button className="btn btn-primary me-2" type="submit">Create account</button>
