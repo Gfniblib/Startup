@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&display=swap');
 
-body {
+.body {
   background: linear-gradient(135deg, #c6cdd4 0%, #f2f4fc 100%);
   color: #202938;
   min-height: 100vh;
