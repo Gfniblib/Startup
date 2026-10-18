@@ -57,24 +57,20 @@ export function drawBattleScene(context, scene) {
   const { width, height } = context.canvas;
   const playerOffset = scene.playerOffset ?? 0;
 
+  // Reset the canvas
   context.clearRect(0, 0, width, height);
 
-  const sky = context.createLinearGradient(0, 0, 0, height);
-  sky.addColorStop(0, '#202938');
-  sky.addColorStop(1, '#58677a');
-  context.fillStyle = sky;
+  // Fill in skybox
+  context.fillStyle = '#7f94b8';
   context.fillRect(0, 0, width, height);
 
-  context.fillStyle = '#354536';
-  context.fillRect(0, height * 0.72, width, height * 0.28);
+  //Scene floor
+  drawRotatedCheckerboard(context);
 
-  context.fillStyle = '#4b6b4b';
-  context.fillRect(0, height * 0.72, width, height * 0.04);
+  // Draw the player character (placeholder)
 
-  context.fillStyle = '#7bb7e0';
-  context.fillRect(width * 0.28, height * 0.42 + playerOffset, 48, 96);
-  context.fillStyle = '#d89055';
-  context.fillRect(width * 0.68, height * 0.42 - playerOffset, 48, 96);
+  context.save();
+  context.restore();
 }
 
 export function drawWaitingScreen(context) {
@@ -99,4 +95,66 @@ export function updateBattleScene(scene, deltaTime) {
     elapsedTime,
     playerOffset: Math.sin(elapsedTime * 2) * 4,
   };
+}
+
+function drawRotatedCheckerboard(ctx) {
+  // Loop through grid cells
+  const rows = 24;
+  const cols = 40;
+  const size = 45;
+  const focalLength = 250;
+  const vpX = ctx.canvas.width * .30;
+  const vpY = ctx.canvas.height * .5;
+  const angle = -2 * Math.PI / 180;
+  const cosA = Math.cos(angle);
+  const sinA = Math.sin(angle);
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+
+      // Define the 4 corners of a single grid square in 3D Space
+      // (Y is the vertical drop below the horizon line)
+      const points3D = [
+        { X: (c - cols / 2) * size,     Y: 120, Z: (r) * size + 80 },
+        { X: (c + 1 - cols / 2) * size, Y: 120, Z: (r) * size + 80 },
+        { X: (c + 1 - cols / 2) * size, Y: 120, Z: (r + 1) * size + 80 },
+        { X: (c - cols / 2) * size,     Y: 120, Z: (r + 1) * size + 80 }
+      ];
+
+      // Map 3D coordinates to 2D screen positions relative to the VP
+      const points2D = points3D.map(p => {
+        // Standard perspective division
+        const screenX = (p.X * focalLength) / p.Z;
+        const screenY = (p.Y * focalLength) / p.Z;
+
+        // Apply a 2D rotation matrix around the Vanishing Point (0,0 abstraction)
+        // This tilts the horizon line by exactly -2 degrees
+        const tiltedX = screenX * cosA - screenY * sinA;
+        const tiltedY = screenX * sinA + screenY * cosA;
+
+        // Shift coordinates relative to the real anchor point on the canvas
+        return {
+          x: tiltedX + vpX,
+          y: tiltedY + vpY
+        };
+      });
+
+      // Draw the warped 3D checkerboard quad
+      ctx.beginPath();
+      ctx.moveTo(points2D[0].x, points2D[0].y);
+      ctx.lineTo(points2D[1].x, points2D[1].y);
+      ctx.lineTo(points2D[2].x, points2D[2].y);
+      ctx.lineTo(points2D[3].x, points2D[3].y);
+      ctx.closePath();
+
+      // Checkerboard color swapping logic
+      ctx.fillStyle = (r + c) % 2 === 0 ? '#9c90df' : '#111111';
+      ctx.fill();
+
+      // Clear edge bleeding artifact lines
+      ctx.strokeStyle = ctx.fillStyle;
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    }
+  }
 }
