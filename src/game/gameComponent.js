@@ -44,3 +44,11 @@ export function getRandomWeather() {
   const randomIndex = Math.floor(Math.random() * weatherEffects.length);
   return weatherEffects[randomIndex];
 }
+
+export function testDelayedPlayerHelpMessage() {
+  const delay = Math.floor(Math.random() * (60000 - 30000 + 1)) + 30000;
+
+  return new Promise((resolve) => {
+    setTimeout(() => resolve('+30 XP for helping another player!'), delay);
+  });
+}

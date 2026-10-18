@@ -1,11 +1,25 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './game.css';
-import { Alert, Button, Card, Col, Image, Row } from 'react-bootstrap';
-import { getRandomWeather } from './gameComponent';
+import { Alert, Card, Col, Image, Row } from 'react-bootstrap';
+import { testDelayedPlayerHelpMessage, getRandomWeather } from './gameComponent';
 
 export function Game() {
-  const [showNotification, setShowNotification] = useState(false);
+  const [playerHelpMessage, setPlayerHelpMessage] = useState('');
   const [weather] = useState(getRandomWeather);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    testDelayedPlayerHelpMessage().then((message) => {
+      if (isMounted) {
+        setPlayerHelpMessage(message);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <div>
@@ -30,15 +44,12 @@ export function Game() {
 
         <Col xs={12}>
           <Card as="section" className="content-section">
-            <p>This button will be replaced to show up when the message is received via websocket</p>
-            {showNotification && (
+            <p>A test message will appear after a random delay of 30 to 60 seconds.</p>
+            {playerHelpMessage && (
               <Alert variant="success" role="status">
-                Your character helped someone else out!
+                {playerHelpMessage}
               </Alert>
             )}
-            <Button variant="primary" onClick={() => setShowNotification(true)}>
-              Websocket Live Update Placeholder.
-            </Button>
           </Card>
         </Col>
 
