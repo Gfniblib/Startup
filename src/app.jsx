@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.css';
 import { BrowserRouter, NavLink, Route, Routes } from 'react-router-dom';
@@ -8,6 +8,8 @@ import { Game } from './game/game';
 import { Leaderboard } from './leaderboard/leaderboard';
 
 export default function App() {
+  const [accountName, setAccountName] = useState('');
+
   return (
     <BrowserRouter>
         <div className="body d-flex flex-column min-vh-100">
@@ -43,7 +45,7 @@ export default function App() {
                 <Row className="gy-3 gx-lg-3 gy-lg-3">
                     <Col xs={12} lg={9} className="order-2 order-lg-1">
                         <Routes>
-                            <Route path="/" element={<Login />} />
+                            <Route path="/" element={<Login onAccountCreated={setAccountName} />} />
                             <Route path="/game" element={<Game />} />
                             <Route path="/leaderboard" element={<Leaderboard />} />
                             <Route path="*" element={<NotFound />} />
@@ -52,7 +54,7 @@ export default function App() {
                     <Col as="aside" xs={12} lg={3} className="order-1 order-lg-2">
                         <Card className="account-panel">
                             <h3 className="h5">Logged in as:</h3>
-                            <p className="mb-0">JohnDoe</p>
+                            <p className="mb-0">{accountName || 'Guest'}</p>
                         </Card>
                     </Col>
                 </Row>
