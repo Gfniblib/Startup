@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import './game.css';
 import { Alert, Button, Card, Col, Image, Row } from 'react-bootstrap';
+import { getRandomWeather } from './gameComponent';
 
 export function Game() {
   const [showNotification, setShowNotification] = useState(false);
+  const [weather] = useState(getRandomWeather);
 
   return (
     <div>
@@ -17,13 +19,10 @@ export function Game() {
 
         <Col xs={12}>
           <Card as="section" className="content-section">
-            <h2>Today's Weather: Sunny</h2>
+            <h2>Today's Weather: {weather.weather}</h2>
             <p>Weather effects on today's battles:</p>
             <ul>
-              <li>Temperature: 75°F</li>
-              <li>Wind: 10 mph</li>
-              <li>Fire monsters will be stronger</li>
-              <li>Water skills and spells will be weaker</li>
+              {weather.effects.map((effect) => <li key={effect}>{effect}</li>)}
               <li>These values are just placeholders and will be replaced by live data from OpenWeather API</li>
             </ul>
           </Card>
