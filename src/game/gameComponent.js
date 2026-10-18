@@ -57,6 +57,15 @@ export function drawBattleScene(context, scene) {
   const { width, height } = context.canvas;
   const playerOffset = scene.playerOffset ?? 0;
 
+  if (!sand.complete) {
+    redrawWhenImageSettles(sand, context, scene);
+    return;
+  }
+
+  if (!sandSmall.complete) {
+    redrawWhenImageSettles(sandSmall, context, scene);
+  }
+
   // Reset the canvas
   context.clearRect(0, 0, width, height);
 
@@ -65,7 +74,7 @@ export function drawBattleScene(context, scene) {
   context.fillRect(0, 0, width, height);
 
   //Scene floor
-  drawRotatedCheckerboard(context);
+  render(context);
 
   // Draw the player character (placeholder)
 
@@ -97,64 +106,125 @@ export function updateBattleScene(scene, deltaTime) {
   };
 }
 
-function drawRotatedCheckerboard(ctx) {
-  // Loop through grid cells
-  const rows = 24;
-  const cols = 40;
-  const size = 45;
-  const focalLength = 250;
-  const vpX = ctx.canvas.width * .30;
-  const vpY = ctx.canvas.height * .5;
-  const angle = -2 * Math.PI / 180;
-  const cosA = Math.cos(angle);
-  const sinA = Math.sin(angle);
+function redrawWhenImageSettles(image, context, scene) {
+  const redraw = () => {
+    image.removeEventListener('load', redraw);
+    image.removeEventListener('error', redraw);
+    drawBattleScene(context, scene);
+  };
+
+  image.addEventListener('load', redraw);
+  image.addEventListener('error', redraw);
+}
+ 
+// ---------------------------------------
+
+
+const sand = new Image();
+const sandSmall = new Image();
+sandSmall.src = '/lorebound_sand_super_small.jpg';
+sand.src = '/lorebound_sand.jpg';
+const angle = -2 * Math.PI / 180;
+const cosA = Math.cos(angle);
+const sinA = Math.sin(angle);
+const rows = 15;
+const cols = 35;
+const size = 45;
+const focalLength = 250;
+
+function render(context) {
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = 'high';
+  const vpX = context.canvas.width * 0.3;
+  const vpY = context.canvas.height * 0.5;
+
+  if (sand.naturalWidth === 0) {
+    return;
+  }
 
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
+      const p0 = projectPoint(c, r, 0, 0, vpX, vpY);
+      const p1 = projectPoint(c, r, 1, 0, vpX, vpY);
+      const p2 = projectPoint(c, r, 1, 1, vpX, vpY);
+      const p3 = projectPoint(c, r, 0, 1, vpX, vpY);
 
-      // Define the 4 corners of a single grid square in 3D Space
-      // (Y is the vertical drop below the horizon line)
-      const points3D = [
-        { X: (c - cols / 2) * size,     Y: 120, Z: (r) * size + 80 },
-        { X: (c + 1 - cols / 2) * size, Y: 120, Z: (r) * size + 80 },
-        { X: (c + 1 - cols / 2) * size, Y: 120, Z: (r + 1) * size + 80 },
-        { X: (c - cols / 2) * size,     Y: 120, Z: (r + 1) * size + 80 }
-      ];
+      const useSmallTexture = (r > 10 || c > 25) && sandSmall.naturalWidth > 0;
+      const img = useSmallTexture ? sandSmall : sand;
+      const w = img.width;
+      const h = img.height;
 
-      // Map 3D coordinates to 2D screen positions relative to the VP
-      const points2D = points3D.map(p => {
-        // Standard perspective division
-        const screenX = (p.X * focalLength) / p.Z;
-        const screenY = (p.Y * focalLength) / p.Z;
+      drawTexturedTriangle(context, img,
+        p0.x, p0.y, p1.x, p1.y, p3.x, p3.y,
+        0, 0, w, 0, 0, h
+      );
 
-        // Apply a 2D rotation matrix around the Vanishing Point (0,0 abstraction)
-        // This tilts the horizon line by exactly -2 degrees
-        const tiltedX = screenX * cosA - screenY * sinA;
-        const tiltedY = screenX * sinA + screenY * cosA;
-
-        // Shift coordinates relative to the real anchor point on the canvas
-        return {
-          x: tiltedX + vpX,
-          y: tiltedY + vpY
-        };
-      });
-
-      // Draw the warped 3D checkerboard quad
-      ctx.beginPath();
-      ctx.moveTo(points2D[0].x, points2D[0].y);
-      ctx.lineTo(points2D[1].x, points2D[1].y);
-      ctx.lineTo(points2D[2].x, points2D[2].y);
-      ctx.lineTo(points2D[3].x, points2D[3].y);
-      ctx.closePath();
-
-      // Checkerboard color swapping logic
-      ctx.fillStyle = (r + c) % 2 === 0 ? '#9c90df' : '#111111';
-      ctx.fill();
-
-      // Clear edge bleeding artifact lines
-      ctx.strokeStyle = ctx.fillStyle;
-      ctx.lineWidth = 0.5;
-      ctx.stroke();
+      drawTexturedTriangle(context, img,
+        p1.x, p1.y, p2.x, p2.y, p3.x, p3.y,
+        w, 0, w, h, 0, h
+      );
     }
   }
+}
+
+function drawTexturedTriangle(context, img, x0, y0, x1, y1, x2, y2, u0, v0, u1, v1, u2, v2) {
+  context.save();
+
+  // 1. Calculate the center point of the triangle
+  const cx = (x0 + x1 + x2) / 3;
+  const cy = (y0 + y1 + y2) / 3;
+
+  // 2. Slightly push the 2D corners outward from the center (by ~0.5 pixels)
+  // This inflates the texture just enough to cover the subpixel rendering gaps
+  const padding = 1;
+
+  let len0 = Math.hypot(x0 - cx, y0 - cy);
+  let len1 = Math.hypot(x1 - cx, y1 - cy);
+  let len2 = Math.hypot(x2 - cx, y2 - cy);
+
+  if (len0 > 0) { x0 += ((x0 - cx) / len0) * padding; y0 += ((y0 - cy) / len0) * padding; }
+  if (len1 > 0) { x1 += ((x1 - cx) / len1) * padding; y1 += ((y1 - cy) / len1) * padding; }
+  if (len2 > 0) { x2 += ((x2 - cx) / len2) * padding; y2 += ((y2 - cy) / len2) * padding; }
+
+  // 3. Create a clipping region for the inflated half-square triangle
+  context.beginPath();
+  context.moveTo(x0, y0);
+  context.lineTo(x1, y1);
+  context.lineTo(x2, y2);
+  context.closePath();
+  context.clip();
+
+  // 4. Calculate the linear matrix coefficients to stretch/skew the image texture
+  const delta = u0 * v1 + v0 * u2 + u1 * v2 - v1 * u2 - v0 * u1 - u0 * v2;
+  if (Math.abs(delta) < 0.001) { context.restore(); return; }
+
+  const a = (x0 * v1 + v0 * x2 + x1 * v2 - v1 * x2 - v0 * x1 - x0 * v2) / delta;
+  const b = (y0 * v1 + v0 * y2 + y1 * v2 - v1 * y2 - v0 * y1 - y0 * v2) / delta;
+  const c = (u0 * x1 + x0 * u2 + u1 * x2 - x1 * u2 - x0 * u1 - u0 * x2) / delta;
+  const d = (u0 * y1 + y0 * u2 + u1 * y2 - y1 * u2 - y0 * u1 - u0 * y2) / delta;
+  const e = (x0 * u1 * v2 + v0 * u2 * x1 + u0 * v1 * x2 - v0 * u1 * x2 - u0 * v2 * x1 - x0 * u2 * v1) / delta;
+  const f = (y0 * u1 * v2 + v0 * u2 * y1 + u0 * v1 * y2 - v0 * u1 * y2 - u0 * v2 * y1 - y0 * u2 * v1) / delta;
+
+  // Apply transformation matrix to the canvas context
+  context.transform(a, b, c, d, e, f);
+
+  // Render image
+  context.drawImage(img, 0, 0);
+  context.restore();
+}
+
+function projectPoint(c, r, offsetC, offsetR, vpX, vpY) {
+  const X = (c + offsetC - cols / 2) * size;
+  const Y = 120;
+  const Z = (r + offsetR) * size + 80;
+
+  // Perspective projection
+  const screenX = (X * focalLength) / Z;
+  const screenY = (Y * focalLength) / Z;
+
+  // Apply the -2 degree tilt around the Vanishing Point
+  const tiltedX = screenX * cosA - screenY * sinA;
+  const tiltedY = screenX * sinA + screenY * cosA;
+
+  return { x: tiltedX + vpX, y: tiltedY + vpY };
 }
