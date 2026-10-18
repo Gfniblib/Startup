@@ -1,7 +1,19 @@
-.game-image {
+.game-canvas-container {
+  position: relative;
+}
+
+.game-canvas {
   width: 100%;
   height: auto;
   border-radius: 0.5rem;
+  background: #202938;
+  display: block;
+}
+
+.game-start-button {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
 }
 
 #notification {

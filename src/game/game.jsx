@@ -1,11 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './game.css';
-import { Alert, Card, Col, Image, Row } from 'react-bootstrap';
-import { testDelayedPlayerHelpMessage, getRandomWeather } from './gameComponent';
+import { Alert, Card, Col, Row } from 'react-bootstrap';
+import {
+  drawBattleScene,
+  drawWaitingScreen,
+  getRandomWeather,
+  testDelayedPlayerHelpMessage,
+} from './gameComponent';
 
 export function Game() {
+  const canvasRef = useRef(null);
   const [playerHelpMessage, setPlayerHelpMessage] = useState('');
   const [weather] = useState(getRandomWeather);
+  const [battleStarted, setBattleStarted] = useState(false);
+
+  useEffect(() => {
+    const context = canvasRef.current?.getContext('2d');
+    if (context) {
+      drawWaitingScreen(context);
+    }
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -21,14 +35,34 @@ export function Game() {
     };
   }, []);
 
+  function startBattle() {
+    const context = canvasRef.current?.getContext('2d');
+    if (!context) {
+      return;
+    }
+
+    drawBattleScene(context, {});
+    setBattleStarted(true);
+  }
+
   return (
     <div>
       <Row className="gy-3 gx-lg-3 gy-lg-3 game-layout">
         <Col xs={12}>
-          <Card as="section" className="content-section">
-            <p>Game placeholder eventually application will go in this general area</p>
-            <Image className="game-image" src="/gameWIP.jpg" alt="placeholder game image" />
-          </Card>
+          <div className="game-canvas-container">
+            <canvas
+              ref={canvasRef}
+              className="game-canvas"
+              width="960"
+              height="540"
+              aria-label="Battle scene. Waiting for battle to begin."
+            />
+            {!battleStarted && (
+              <button className="game-start-button" type="button" onClick={startBattle}>
+                Start battle
+              </button>
+            )}
+          </div>
         </Col>
 
         <Col xs={12}>
