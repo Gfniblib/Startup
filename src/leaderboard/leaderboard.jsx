@@ -1,6 +1,7 @@
 import React from 'react';
 import './leaderboard.css';
 import { Card, Col, Row, Table } from 'react-bootstrap';
+import { leaderboardData } from '../game/gameComponent';
 
 export function Leaderboard() {
   return (
@@ -9,7 +10,7 @@ export function Leaderboard() {
         <Col xs={12}>
           <Card as="section" className="content-section">
             <h2>Heroes of Legend</h2>
-            <p>Placeholder static leaderboard. Eventually will pull data from the database.</p>
+            <p>Temporary in-memory leaderboard. Scores will eventually come from the database.</p>
             <Table striped hover responsive className="align-middle mb-0">
                 <thead>
                   <tr>
@@ -20,10 +21,14 @@ export function Leaderboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr><td>1</td><td>Aria Dawn</td><td>Rogue Archivist</td><td>14,800</td></tr>
-                  <tr><td>2</td><td>Kael Frost</td><td>Frostblade</td><td>13,250</td></tr>
-                  <tr><td>3</td><td>Nyra Bloom</td><td>Wild Sage</td><td>12,600</td></tr>
-                  <tr><td>4</td><td>Orin Vale</td><td>Guardian</td><td>11,920</td></tr>
+                  {leaderboardData.map((entry, index) => (
+                    <tr key={entry.hero}>
+                      <td>{index + 1}</td>
+                      <td>{entry.hero}</td>
+                      <td>{entry.heroClass}</td>
+                      <td>{entry.score.toLocaleString()}</td>
+                    </tr>
+                  ))}
                 </tbody>
             </Table>
           </Card>

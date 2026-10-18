@@ -33,6 +33,13 @@ export const weatherEffects = [
   },
 ];
 
+export const leaderboardData = [
+  { hero: 'Aria Dawn', heroClass: 'Rogue Archivist', score: 14800 },
+  { hero: 'Kael Frost', heroClass: 'Frostblade', score: 13250 },
+  { hero: 'Nyra Bloom', heroClass: 'Wild Sage', score: 12600 },
+  { hero: 'Orin Vale', heroClass: 'Guardian', score: 11920 },
+];
+
 export function getRandomWeather() {
   const randomIndex = Math.floor(Math.random() * weatherEffects.length);
   return weatherEffects[randomIndex];
