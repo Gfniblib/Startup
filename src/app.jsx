@@ -9,6 +9,7 @@ import { Leaderboard } from './leaderboard/leaderboard';
 
 export default function App() {
   const [accountName, setAccountName] = useState('');
+  const [playerCharacter, setPlayerCharacter] = useState(null);
 
   return (
     <BrowserRouter>
@@ -46,7 +47,15 @@ export default function App() {
                     <Col xs={12} lg={9} className="order-2 order-lg-1">
                         <Routes>
                             <Route path="/" element={<Login onAccountCreated={setAccountName} />} />
-                            <Route path="/game" element={<Game />} />
+                            <Route
+                                path="/game"
+                                element={(
+                                    <Game
+                                        playerCharacter={playerCharacter}
+                                        onCharacterCreated={setPlayerCharacter}
+                                    />
+                                )}
+                            />
                             <Route path="/leaderboard" element={<Leaderboard />} />
                             <Route path="*" element={<NotFound />} />
                         </Routes>
@@ -55,6 +64,15 @@ export default function App() {
                         <Card className="account-panel">
                             <h3 className="h5">Logged in as:</h3>
                             <p className="mb-0">{accountName || 'Guest'}</p>
+                            {playerCharacter && (
+                                <section className="mt-3 pt-3 border-top" aria-label="Character">
+                                    <h3 className="h5">{playerCharacter.name}</h3>
+                                    <p className="mb-0">
+                                        {playerCharacter.race} {playerCharacter.heroClass}
+                                    </p>
+                                    <p className="mb-0">Devoted to {playerCharacter.devotion}</p>
+                                </section>
+                            )}
                         </Card>
                     </Col>
                 </Row>

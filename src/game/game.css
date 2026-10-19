@@ -16,6 +16,61 @@
   bottom: 1rem;
 }
 
+.character-creation form {
+  max-width: 48rem;
+}
+
+.character-name-input {
+  max-width: 24rem;
+}
+
+.character-choice-group {
+  border: 0;
+  margin: 1.5rem 0;
+  padding: 0;
+}
+
+.character-choice-group legend {
+  float: none;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.character-choice-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+}
+
+.character-option {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #adb5bd;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  gap: 0.5rem;
+  min-height: 3.25rem;
+  padding: 0.75rem;
+}
+
+.character-option.selected {
+  background: #f4f0fc;
+  border-color: #290c5c;
+  box-shadow: 0 0 0 1px #290c5c;
+}
+
+.character-option:focus-within {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+}
+
+.character-option .form-check-input {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
 #notification {
   font-weight: bold;
 }

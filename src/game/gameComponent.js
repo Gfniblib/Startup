@@ -1,31 +1,5 @@
 export class Character {
 
-  // Create default character
-  constructor(name, heroClass, race) {
-    this.name = name;
-    this.heroClass = heroClass;
-    this.race = race;
-    this.level = 1;
-
-    this.str = 1;
-    this.con = 1;
-    this.dex = 1;
-    this.int = 1;
-    this.wil = 1;
-    this.spd = 1;
-    this.hp = 1;
-    this.mp = 1;
-
-    this.strChance = 50;
-    this.conChance = 50;
-    this.dexChance = 50;
-    this.intChance = 50;
-    this.wilChance = 50;
-    this.spdChance = 50;
-    this.hpChance = 50;
-    this.mpChance = 50;
-  }
-
   // Create Character from ancestor
   constructor(name, heroClass, race, ancestor) {
     this.name = name;

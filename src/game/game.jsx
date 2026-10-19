@@ -8,20 +8,30 @@ import {
   testDelayedPlayerHelpMessage,
 } from './gameComponent';
 
-export function Game() {
+export function Game({ playerCharacter, onCharacterCreated }) {
   const canvasRef = useRef(null);
   const [playerHelpMessage, setPlayerHelpMessage] = useState('');
   const [weather] = useState(getRandomWeather);
   const [battleStarted, setBattleStarted] = useState(false);
+  const [characterDraft, setCharacterDraft] = useState({
+    name: '',
+    race: '',
+    heroClass: '',
+    devotion: '',
+  });
 
   useEffect(() => {
     const context = canvasRef.current?.getContext('2d');
-    if (context) {
+    if (context && playerCharacter) {
       drawWaitingScreen(context);
     }
-  }, []);
+  }, [playerCharacter]);
 
   useEffect(() => {
+    if (!playerCharacter) {
+      return undefined;
+    }
+
     let isMounted = true;
 
     testDelayedPlayerHelpMessage().then((message) => {
@@ -33,7 +43,23 @@ export function Game() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [playerCharacter]);
+
+  function createCharacter(event) {
+    event.preventDefault();
+    onCharacterCreated({
+      ...characterDraft,
+      name: characterDraft.name.trim(),
+    });
+  }
+
+  function updateCharacterDraft(event) {
+    const { name, value } = event.target;
+    setCharacterDraft((currentDraft) => ({
+      ...currentDraft,
+      [name]: value,
+    }));
+  }
 
   function startBattle() {
     const context = canvasRef.current?.getContext('2d');
@@ -43,6 +69,71 @@ export function Game() {
 
     drawBattleScene(context, {});
     setBattleStarted(true);
+  }
+
+  if (!playerCharacter) {
+    const choiceGroups = [
+      { key: 'race', legend: 'Choose your people', options: ['Elf', 'Dwarf', 'Human'] },
+      { key: 'heroClass', legend: 'Choose your class', options: ['Warrior', 'Mage', 'Cleric', 'Ranger'] },
+      { key: 'devotion', legend: 'Choose your devotion', options: ['Cloud', 'Wind', 'Sun', 'Rain'] },
+    ];
+
+    return (
+      <Card as="section" className="content-section character-creation">
+        <h2>Create your character</h2>
+        <p>Choose who you are before entering the battle.</p>
+        <form onSubmit={createCharacter}>
+          <label className="form-label" htmlFor="character-name">Character name</label>
+          <input
+            className="form-control character-name-input"
+            id="character-name"
+            name="name"
+            type="text"
+            value={characterDraft.name}
+            onChange={updateCharacterDraft}
+            pattern=".*\S.*"
+            maxLength={24}
+            title="Enter at least one non-space character."
+            autoComplete="off"
+            required
+          />
+
+          {choiceGroups.map(({ key, legend, options }) => (
+            <fieldset className="character-choice-group" key={key}>
+              <legend>{legend}</legend>
+              <div className="character-choice-grid">
+                {options.map((option, index) => {
+                  const id = `${key}-${option.toLowerCase()}`;
+                  const selected = characterDraft[key] === option;
+
+                  return (
+                    <label
+                      className={`character-option${selected ? ' selected' : ''}`}
+                      htmlFor={id}
+                      key={option}
+                    >
+                      <input
+                        className="form-check-input"
+                        id={id}
+                        name={key}
+                        type="radio"
+                        value={option}
+                        checked={selected}
+                        onChange={updateCharacterDraft}
+                        required={index === 0}
+                      />
+                      <span>{option}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </fieldset>
+          ))}
+
+          <button className="btn btn-primary" type="submit">Create character</button>
+        </form>
+      </Card>
+    );
   }
 
   return (
