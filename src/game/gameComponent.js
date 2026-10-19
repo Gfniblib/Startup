@@ -1,3 +1,58 @@
+export class Character {
+
+  // Create default character
+  constructor(name, heroClass, race) {
+    this.name = name;
+    this.heroClass = heroClass;
+    this.race = race;
+    this.level = 1;
+
+    this.str = 1;
+    this.con = 1;
+    this.dex = 1;
+    this.int = 1;
+    this.wil = 1;
+    this.spd = 1;
+    this.hp = 1;
+    this.mp = 1;
+
+    this.strChance = 50;
+    this.conChance = 50;
+    this.dexChance = 50;
+    this.intChance = 50;
+    this.wilChance = 50;
+    this.spdChance = 50;
+    this.hpChance = 50;
+    this.mpChance = 50;
+  }
+
+  // Create Character from ancestor
+  constructor(name, heroClass, race, ancestor) {
+    this.name = name;
+    this.heroClass = heroClass;
+    this.race = race;
+    this.level = 1;
+
+    this.str = 1;
+    this.con = 1;
+    this.dex = 1;
+    this.int = 1;
+    this.wil = 1;
+    this.spd = 1;
+    this.hp = 1;
+    this.mp = 1;
+
+    this.strChance = 50; // TODO
+    this.conChance = 50;
+    this.dexChance = 50;
+    this.intChance = 50;
+    this.wilChance = 50;
+    this.spdChance = 50;
+    this.hpChance = 50;
+    this.mpChance = 50;
+  }
+}
+
 export const weatherEffects = [
   {
     weather: 'Rainy',
@@ -66,11 +121,15 @@ export function drawBattleScene(context, scene) {
     redrawWhenImageSettles(sandSmall, context, scene);
   }
 
+   if (!rock.complete) {
+    redrawWhenImageSettles(rock, context, scene);
+  }
+
   // Reset the canvas
   context.clearRect(0, 0, width, height);
 
   // Fill in skybox
-  context.fillStyle = '#7f94b8';
+  context.fillStyle = '#97b2e0';
   context.fillRect(0, 0, width, height);
 
   //Scene floor
@@ -122,6 +181,8 @@ function redrawWhenImageSettles(image, context, scene) {
 
 const sand = new Image();
 const sandSmall = new Image();
+const rock = new Image();
+rock.src = '/rock.png';
 sandSmall.src = '/lorebound_sand_super_small.jpg';
 sand.src = '/lorebound_sand.jpg';
 const angle = -2 * Math.PI / 180;
@@ -163,6 +224,34 @@ function render(context) {
         p1.x, p1.y, p2.x, p2.y, p3.x, p3.y,
         w, 0, w, h, 0, h
       );
+    }
+  }
+ 
+  // Draw some extra rocks
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const p0 = projectPoint(c, r, 0, 0, vpX, vpY);
+      const p1 = projectPoint(c, r, 1, 0, vpX, vpY);
+      const p2 = projectPoint(c, r, 1, 1, vpX, vpY);
+      const p3 = projectPoint(c, r, 0, 1, vpX, vpY);
+
+      if ((r > 10 || c > 25) && rock.naturalWidth > 0) {
+        if (Math.random() < 0.05) {
+          const centerX = (p0.x + p1.x + p2.x + p3.x) / 4;
+          const centerY = (p0.y + p1.y + p2.y + p3.y) / 4;
+          const tileWidth = Math.hypot(p1.x - p0.x, p1.y - p0.y);
+          const rockWidth = tileWidth * 0.8;
+          const rockHeight = rockWidth * (rock.naturalHeight / rock.naturalWidth);
+
+          context.drawImage(
+            rock,
+            centerX - rockWidth / 2,
+            centerY - rockHeight / 2,
+            rockWidth,
+            rockHeight
+          );
+        }
+      }
     }
   }
 }
