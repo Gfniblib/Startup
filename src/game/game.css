@@ -71,6 +71,41 @@
   margin: 0;
 }
 
+.turn-order-list {
+  display: grid;
+  gap: 0.75rem 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.current-turn {
+  background: #f4f0fc;
+  border-left: 0.25rem solid #290c5c;
+  padding: 0.5rem 0.75rem;
+}
+
+.turn-order-label {
+  display: flex;
+  font-size: 0.9rem;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.initiative-track {
+  background: #e2e5e9;
+  border-radius: 999px;
+  height: 0.65rem;
+  overflow: hidden;
+}
+
+.initiative-fill {
+  background: #5c35a2;
+  height: 100%;
+  transition: width 100ms linear;
+}
+
 #notification {
   font-weight: bold;
 }

@@ -16,6 +16,9 @@ export function Game({ playerCharacter, onCharacterCreated }) {
   const [playerHelpMessage, setPlayerHelpMessage] = useState('');
   const [weather] = useState(getRandomWeather);
   const [battleStarted, setBattleStarted] = useState(false);
+  const [battle, setBattle] = useState(null);
+  const [currentTurn, setCurrentTurn] = useState(null);
+  const [, setInitiativeRefresh] = useState(0);
   const [characterDraft, setCharacterDraft] = useState({
     name: '',
     race: '',
@@ -29,6 +32,28 @@ export function Game({ playerCharacter, onCharacterCreated }) {
       drawWaitingScreen(context);
     }
   }, [playerCharacter]);
+
+  useEffect(() => {
+    if (!battleStarted || !battle || currentTurn) {
+      return undefined;
+    }
+
+    let ticksSinceRefresh = 0;
+    const timer = window.setInterval(() => {
+      const actor = battle.tick();
+      ticksSinceRefresh += 1;
+
+      if (actor) {
+        setCurrentTurn(actor);
+        setInitiativeRefresh((revision) => revision + 1);
+      } else if (ticksSinceRefresh >= 10) {
+        setInitiativeRefresh((revision) => revision + 1);
+        ticksSinceRefresh = 0;
+      }
+    }, 10);
+
+    return () => window.clearInterval(timer);
+  }, [battleStarted, battle, currentTurn]);
 
   useEffect(() => {
     if (!playerCharacter) {
@@ -79,7 +104,14 @@ export function Game({ playerCharacter, onCharacterCreated }) {
     });
 
     drawBattleScene(context, battle);
+    setBattle(battle);
     setBattleStarted(true);
+  }
+
+  function finishTurn() {
+    const nextActor = battle.finishTurn();
+    setCurrentTurn(nextActor);
+    setInitiativeRefresh((revision) => revision + 1);
   }
 
   if (!playerCharacter) {
@@ -166,6 +198,48 @@ export function Game({ playerCharacter, onCharacterCreated }) {
             )}
           </div>
         </Col>
+
+        {battle && (
+          <Col xs={12}>
+            <Card as="section" className="content-section turn-order">
+              <h2>Turn order</h2>
+              {currentTurn && (
+                <p className="current-turn" role="status">
+                  Current turn: <strong>{currentTurn.name}</strong>
+                  <span> Resolve this entity's action to resume initiative.</span>
+                </p>
+              )}
+              {currentTurn && (
+                <button className="btn btn-primary mb-3" type="button" onClick={finishTurn}>
+                  Complete {currentTurn.name}'s turn
+                </button>
+              )}
+              <ol className="turn-order-list">
+                {battle.getTurnOrder().map((entity, index) => (
+                  <li className="turn-order-item" key={`${entity.name}-${index}`}>
+                    <div className="turn-order-label">
+                      <span>{entity.name}</span>
+                      <span>{Math.floor(entity.initiative)} / 1000</span>
+                    </div>
+                    <div
+                      className="initiative-track"
+                      role="progressbar"
+                      aria-label={`${entity.name} initiative`}
+                      aria-valuemin="0"
+                      aria-valuemax="1000"
+                      aria-valuenow={Math.min(1000, Math.floor(entity.initiative))}
+                    >
+                      <div
+                        className="initiative-fill"
+                        style={{ width: `${Math.min(100, (entity.initiative / 1000) * 100)}%` }}
+                      />
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </Card>
+          </Col>
+        )}
 
         <Col xs={12}>
           <Card as="section" className="content-section">

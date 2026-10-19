@@ -15,6 +15,8 @@ export class Character {
     this.spd = 1;
     this.hp = 1;
     this.mp = 1;
+    this.initiative = 0;
+    this.initiativeTieBreaker = Math.random();
 
     this.strChance = 50; // TODO
     this.conChance = 50;
@@ -40,6 +42,8 @@ export class Enemy {
     this.spd = 1;
     this.hp = 1;
     this.mp = 1;
+    this.initiative = 0;
+    this.initiativeTieBreaker = Math.random();
   }
 }
 
@@ -66,6 +70,62 @@ export class Battle {
     this.weather = weather;
     this.playerCharacters = [...playerCharacters];
     this.enemies = [...enemies];
+    this.currentTurn = null;
+  }
+
+  getTurnOrder() {
+    return [...this.playerCharacters, ...this.enemies]
+      .filter((entity) => entity.hp > 0)
+      .sort((a, b) => {
+        const aTicksRemaining = a.spd > 0
+          ? Math.max(0, (1000 - a.initiative) / a.spd)
+          : Infinity;
+        const bTicksRemaining = b.spd > 0
+          ? Math.max(0, (1000 - b.initiative) / b.spd)
+          : Infinity;
+
+        return aTicksRemaining - bTicksRemaining
+          || a.initiativeTieBreaker - b.initiativeTieBreaker;
+      });
+  }
+
+  tick() {
+    if (this.currentTurn) {
+      return null;
+    }
+
+    const aliveEntities = this.getTurnOrder();
+    aliveEntities.forEach((entity) => {
+      entity.initiative += entity.spd;
+    });
+
+    const readyEntities = aliveEntities.filter((entity) => entity.initiative >= 1000);
+    if (readyEntities.length === 0) {
+      return null;
+    }
+
+    const actor = readyEntities[Math.floor(Math.random() * readyEntities.length)];
+    this.currentTurn = actor;
+    return actor;
+  }
+
+  finishTurn() {
+    if (!this.currentTurn) {
+      throw new Error('There is no active turn to finish.');
+    }
+
+    this.currentTurn.initiative -= 1000;
+    this.currentTurn = null;
+
+    const readyEntities = this.getTurnOrder()
+      .filter((entity) => entity.initiative >= 1000);
+    if (readyEntities.length === 0) {
+      return null;
+    }
+
+    const nextActor = readyEntities[Math.floor(Math.random() * readyEntities.length)];
+    this.currentTurn = nextActor;
+    return nextActor;
   }
 
   addPlayerCharacter(character) {
