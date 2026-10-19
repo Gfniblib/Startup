@@ -2,6 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import './game.css';
 import { Alert, Card, Col, Row } from 'react-bootstrap';
 import {
+  Battle,
+  Character,
+  Enemy,
   drawBattleScene,
   drawWaitingScreen,
   getRandomWeather,
@@ -47,10 +50,13 @@ export function Game({ playerCharacter, onCharacterCreated }) {
 
   function createCharacter(event) {
     event.preventDefault();
-    onCharacterCreated({
-      ...characterDraft,
-      name: characterDraft.name.trim(),
-    });
+    const character = new Character(
+      characterDraft.name.trim(),
+      characterDraft.heroClass,
+      characterDraft.race
+    );
+    character.devotion = characterDraft.devotion;
+    onCharacterCreated(character);
   }
 
   function updateCharacterDraft(event) {
@@ -67,7 +73,12 @@ export function Game({ playerCharacter, onCharacterCreated }) {
       return;
     }
 
-    drawBattleScene(context, {});
+    const battle = new Battle({
+      playerCharacters: [playerCharacter],
+      enemies: Array.from({ length: 4 }, (_, index) => new Enemy(`Goblin ${index + 1}`, 'Goblin')),
+    });
+
+    drawBattleScene(context, battle);
     setBattleStarted(true);
   }
 

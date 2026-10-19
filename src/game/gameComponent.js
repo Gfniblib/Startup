@@ -27,6 +27,68 @@ export class Character {
   }
 }
 
+export class Enemy {
+  constructor(name, enemyType) {
+    this.name = name;
+    this.enemyType = enemyType;
+
+    this.str = 1;
+    this.con = 1;
+    this.dex = 1;
+    this.int = 1;
+    this.wil = 1;
+    this.spd = 1;
+    this.hp = 1;
+    this.mp = 1;
+  }
+}
+
+export class Battle {
+  constructor({
+    environment = 'stub',
+    weather = 'stub',
+    playerCharacters = [],
+    enemies = [],
+  } = {}) {
+    if (!Array.isArray(playerCharacters) || playerCharacters.length > 4) {
+      throw new RangeError('A battle can have up to 4 player characters.');
+    }
+
+    if (!Array.isArray(enemies) || enemies.length > 4) {
+      throw new RangeError('A battle can have up to 4 enemies.');
+    }
+
+    if (!enemies.every((enemy) => enemy instanceof Enemy)) {
+      throw new TypeError('Battle enemies must be Enemy instances.');
+    }
+
+    this.environment = environment;
+    this.weather = weather;
+    this.playerCharacters = [...playerCharacters];
+    this.enemies = [...enemies];
+  }
+
+  addPlayerCharacter(character) {
+    if (this.playerCharacters.length >= 4) {
+      throw new RangeError('A battle can have up to 4 player characters.');
+    }
+
+    this.playerCharacters.push(character);
+  }
+
+  addEnemy(enemy) {
+    if (!(enemy instanceof Enemy)) {
+      throw new TypeError('Battle enemies must be Enemy instances.');
+    }
+
+    if (this.enemies.length >= 4) {
+      throw new RangeError('A battle can have up to 4 enemies.');
+    }
+
+    this.enemies.push(enemy);
+  }
+}
+
 export const weatherEffects = [
   {
     weather: 'Rainy',
@@ -82,21 +144,21 @@ export function testDelayedPlayerHelpMessage() {
   });
 }
 
-export function drawBattleScene(context, scene) {
+export function drawBattleScene(context, battle, scene = {}) {
   const { width, height } = context.canvas;
   const playerOffset = scene.playerOffset ?? 0;
 
   if (!sand.complete) {
-    redrawWhenImageSettles(sand, context, scene);
+    redrawWhenImageSettles(sand, context, battle, scene);
     return;
   }
 
   if (!sandSmall.complete) {
-    redrawWhenImageSettles(sandSmall, context, scene);
+    redrawWhenImageSettles(sandSmall, context, battle, scene);
   }
 
    if (!rock.complete) {
-    redrawWhenImageSettles(rock, context, scene);
+    redrawWhenImageSettles(rock, context, battle, scene);
   }
 
   // Reset the canvas
@@ -107,7 +169,7 @@ export function drawBattleScene(context, scene) {
   context.fillRect(0, 0, width, height);
 
   //Scene floor
-  render(context);
+  render(context, battle);
 
   // Draw the player character (placeholder)
 
@@ -139,11 +201,11 @@ export function updateBattleScene(scene, deltaTime) {
   };
 }
 
-function redrawWhenImageSettles(image, context, scene) {
+function redrawWhenImageSettles(image, context, battle, scene) {
   const redraw = () => {
     image.removeEventListener('load', redraw);
     image.removeEventListener('error', redraw);
-    drawBattleScene(context, scene);
+    drawBattleScene(context, battle, scene);
   };
 
   image.addEventListener('load', redraw);
@@ -167,7 +229,7 @@ const cols = 35;
 const size = 45;
 const focalLength = 250;
 
-function render(context) {
+function render(context, battle) {
   context.imageSmoothingEnabled = true;
   context.imageSmoothingQuality = 'high';
   const vpX = context.canvas.width * 0.3;
@@ -228,6 +290,67 @@ function render(context) {
       }
     }
   }
+
+  drawBattleFormation(context, battle.enemies, '#2e9e48', 'right', 60);
+  drawBattleFormation(context, battle.playerCharacters, '#315fca', 'left', 40);
+  drawStats(context, battle.enemies, 'right');
+  drawStats(context, battle.playerCharacters, 'left');
+}
+
+function drawBattleFormation(context, characters, color, side, anchorY) {
+  const rectangleWidth = 40;
+  const rectangleHeight = 80;
+  const gap = 13;
+  const margin = 20;
+  const columnCount = Math.min(characters.length, 2);
+
+  context.fillStyle = color;
+  characters.forEach((_, index) => {
+    const x = context.canvas.width * (side === 'left' ? 0.1 : 0.55)
+    + index * (rectangleWidth + margin);
+    const y = context.canvas.height * (side === 'left' ? 0.75 : .6) + (index * gap);
+
+    context.fillRect(x, y, rectangleWidth, rectangleHeight);
+  });
+}
+
+function drawStats(context, characters, side) {
+  const { width, height } = context.canvas;
+  const panelWidth = width * 0.24;
+  const panelHeight = height * 0.1;
+  const marginX = width * 0.02;
+  const marginY = height * 0.02;
+  const gap = height * 0.012;
+  const textPadding = panelWidth * 0.06;
+  const fontSize = Math.max(10, height * 0.026);
+  const x = side === 'left' ? marginX : width - panelWidth - marginX;
+  const backgroundColor = side === 'left' ? '#172c54' : '#173e24';
+  const borderColor = side === 'left' ? '#79a7ff' : '#75d48c';
+
+  context.save();
+  context.font = `${fontSize}px sans-serif`;
+  context.textAlign = 'left';
+  context.textBaseline = 'middle';
+
+  characters.forEach((character, index) => {
+    const y = marginY + index * (panelHeight + gap);
+
+    context.fillStyle = backgroundColor;
+    context.fillRect(x, y, panelWidth, panelHeight);
+    context.strokeStyle = borderColor;
+    context.strokeRect(x, y, panelWidth, panelHeight);
+
+    context.fillStyle = '#ffffff';
+    context.fillText(character.name, x + textPadding, y + panelHeight * 0.32, panelWidth - textPadding * 2);
+    context.fillText(
+      `HP: ${character.hp}  MP: ${character.mp}`,
+      x + textPadding,
+      y + panelHeight * 0.72,
+      panelWidth - textPadding * 2
+    );
+  });
+
+  context.restore();
 }
 
 function drawTexturedTriangle(context, img, x0, y0, x1, y1, x2, y2, u0, v0, u1, v1, u2, v2) {
