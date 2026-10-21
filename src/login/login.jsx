@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './login.css';
 import { Button, Card, Col, Form, Row } from 'react-bootstrap';
+import { readAccounts, saveAccounts } from './accountStorage';
 
 export function Login({ onAccountCreated }) {
   const [username, setUsername] = useState('');
@@ -61,7 +62,7 @@ export function Login({ onAccountCreated }) {
       }
 
       window.localStorage.setItem('lorebound.currentUsername', usernameKey);
-      onAccountCreated(authenticatedAccount.username);
+      onAccountCreated(authenticatedAccount.username, authenticatedAccount.character ?? null);
       setPassword('');
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Unable to save or verify this account.');
@@ -129,24 +130,6 @@ export function Login({ onAccountCreated }) {
       </Col>
     </Row>
   );
-}
-
-function readAccounts() {
-  const storedAccounts = window.localStorage.getItem('lorebound.accounts');
-  if (!storedAccounts) {
-    return [];
-  }
-
-  const accounts = JSON.parse(storedAccounts);
-  if (!Array.isArray(accounts)) {
-    throw new Error('Saved account data is invalid. Clear the Lorebound browser storage and try again.');
-  }
-
-  return accounts;
-}
-
-function saveAccounts(accounts) {
-  window.localStorage.setItem('lorebound.accounts', JSON.stringify(accounts));
 }
 
 function createSalt() {
