@@ -4,12 +4,38 @@ import './app.css';
 import { BrowserRouter, NavLink, Route, Routes } from 'react-router-dom';
 import { Card, Col, Container, Nav, Row } from 'react-bootstrap';
 import { Login } from './login/login';
+import { saveCharacterForAccount } from './login/accountStorage';
 import { Game } from './game/game';
 import { Leaderboard } from './leaderboard/leaderboard';
+import { Character } from './game/gameComponent';
 
 export default function App() {
   const [accountName, setAccountName] = useState('');
   const [playerCharacter, setPlayerCharacter] = useState(null);
+  const [characterSaveError, setCharacterSaveError] = useState('');
+
+  function handleAccountAuthenticated(username, savedCharacter) {
+    setAccountName(username);
+    setPlayerCharacter(savedCharacter ? restoreCharacter(savedCharacter) : null);
+    setCharacterSaveError('');
+  }
+
+  function handleCharacterCreated(character) {
+    setPlayerCharacter(character);
+    setCharacterSaveError('');
+
+    if (!accountName) {
+      return;
+    }
+
+    try {
+      saveCharacterForAccount(accountName, character);
+    } catch (error) {
+      setCharacterSaveError(
+        error instanceof Error ? error.message : 'Unable to save this character to the account.'
+      );
+    }
+  }
 
   return (
     <BrowserRouter>
@@ -46,13 +72,13 @@ export default function App() {
                 <Row className="gy-3 gx-lg-3 gy-lg-3">
                     <Col xs={12} lg={9} className="order-2 order-lg-1">
                         <Routes>
-                            <Route path="/" element={<Login onAccountCreated={setAccountName} />} />
+                            <Route path="/" element={<Login onAccountCreated={handleAccountAuthenticated} />} />
                             <Route
                                 path="/game"
                                 element={(
                                     <Game
                                         playerCharacter={playerCharacter}
-                                        onCharacterCreated={setPlayerCharacter}
+                                        onCharacterCreated={handleCharacterCreated}
                                     />
                                 )}
                             />
@@ -73,6 +99,11 @@ export default function App() {
                                     <p className="mb-0">Devoted to {playerCharacter.devotion}</p>
                                 </section>
                             )}
+                            {characterSaveError && (
+                                <p className="text-danger mt-3 mb-0" role="alert">
+                                    {characterSaveError}
+                                </p>
+                            )}
                         </Card>
                     </Col>
                 </Row>
@@ -84,6 +115,16 @@ export default function App() {
         </div>
     </BrowserRouter>
   );
+}
+
+function restoreCharacter(savedCharacter) {
+  const character = new Character(
+    savedCharacter.name,
+    savedCharacter.heroClass,
+    savedCharacter.race
+  );
+  Object.assign(character, savedCharacter);
+  return character;
 }
 
 function NotFound() {
