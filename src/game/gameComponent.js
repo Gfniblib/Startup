@@ -39,9 +39,9 @@ export class Enemy {
     this.str = 1;
     this.con = 1;
     this.dex = 1;
-    this.int = 1;
-    this.wil = 1;
-    this.spd = 1;
+    this.int = 2;
+    this.wil = 2;
+    this.spd = 3;
     this.hp = 1;
     this.currentHp = this.hp;
     this.mp = 1;
@@ -51,6 +51,60 @@ export class Enemy {
 
     this.xpValue = 10;
   }
+}
+
+export class Goblin extends Enemy {
+  constructor(name) {
+    super(name, 'goblin');
+  }
+
+  // Override default stats for Goblin
+  str = 1;
+  con = 5;
+  dex = 1;
+  int = 1;
+  wil = 3;
+  spd = 2;
+  hp = 100;
+  currentHp = this.hp;
+  mp = 20;
+  currentMp = this.mp;
+}
+
+export class Skeleton extends Enemy {
+  constructor(name) {
+    super(name, 'skeleton');
+  }
+
+  // Override default stats for Skeleton
+  str = 1;
+  con = 1;
+  dex = 1;
+  int = 1;
+  wil = 1;
+  spd = 1;
+  hp = 150;
+  currentHp = this.hp;
+  mp = 10;
+  currentMp = this.mp;
+}
+
+export class Slime extends Enemy {
+  constructor(name) {
+    super(name, 'slime');
+  }
+
+  // Override default stats for Slime
+  str = 3;
+  con = 10;
+  dex = 1;
+  int = 1;
+  wil = 1;
+  spd = 1;
+  hp = 200;
+  currentHp = this.hp;
+  mp = 30;
+  currentMp = this.mp;
 }
 
 export class Battle {
