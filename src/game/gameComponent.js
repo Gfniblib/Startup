@@ -14,7 +14,9 @@ export class Character {
     this.wil = 1;
     this.spd = 1;
     this.hp = 1;
+    this.currentHp = this.hp;
     this.mp = 1;
+    this.currentMp = this.mp;
     this.initiative = 0;
     this.initiativeTieBreaker = Math.random();
 
@@ -41,9 +43,13 @@ export class Enemy {
     this.wil = 1;
     this.spd = 1;
     this.hp = 1;
+    this.currentHp = this.hp;
     this.mp = 1;
+    this.currentMp = this.mp;
     this.initiative = 0;
     this.initiativeTieBreaker = Math.random();
+
+    this.xpValue = 10;
   }
 }
 
@@ -403,7 +409,7 @@ function drawStats(context, characters, side) {
     context.fillStyle = '#ffffff';
     context.fillText(character.name, x + textPadding, y + panelHeight * 0.32, panelWidth - textPadding * 2);
     context.fillText(
-      `HP: ${character.hp}  MP: ${character.mp}`,
+      `HP: ${character.currentHp}/${character.hp}  MP: ${character.currentMp}/${character.mp}`,
       x + textPadding,
       y + panelHeight * 0.72,
       panelWidth - textPadding * 2
