@@ -4,7 +4,9 @@ import { Alert, Card, Col, Row } from 'react-bootstrap';
 import {
   Battle,
   Character,
-  Enemy,
+  Goblin,
+  Skeleton,
+  Slime,
   drawBattleScene,
   drawWaitingScreen,
   getRandomWeather,
@@ -18,6 +20,8 @@ export function Game({ playerCharacter, onCharacterCreated }) {
   const [battleStarted, setBattleStarted] = useState(false);
   const [battle, setBattle] = useState(null);
   const [currentTurn, setCurrentTurn] = useState(null);
+  const [selectingEnemy, setSelectingEnemy] = useState(false);
+  const [selectedEnemy, setSelectedEnemy] = useState(null);
   const [, setInitiativeRefresh] = useState(0);
   const [characterDraft, setCharacterDraft] = useState({
     name: '',
@@ -98,9 +102,14 @@ export function Game({ playerCharacter, onCharacterCreated }) {
       return;
     }
 
+    // TODO base enemies off of player strength and location
+    const enemyTypes = [Goblin, Skeleton, Slime];
     const battle = new Battle({
       playerCharacters: [playerCharacter],
-      enemies: Array.from({ length: 4 }, (_, index) => new Enemy(`Goblin ${index + 1}`, 'Goblin')),
+      enemies: Array.from({ length: 4 }, (_, index) => {
+        const EnemyType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
+        return new EnemyType(`${EnemyType.name} ${index + 1}`);
+      }),
     });
 
     drawBattleScene(context, battle);
@@ -111,6 +120,8 @@ export function Game({ playerCharacter, onCharacterCreated }) {
   function finishTurn() {
     const nextActor = battle.finishTurn();
     setCurrentTurn(nextActor);
+    setSelectingEnemy(false);
+    setSelectedEnemy(null);
     setInitiativeRefresh((revision) => revision + 1);
   }
 
@@ -191,6 +202,64 @@ export function Game({ playerCharacter, onCharacterCreated }) {
               height="540"
               aria-label="Battle scene. Waiting for battle to begin."
             />
+            {battleStarted && battle && (
+              <div className="battle-action-panel">
+                <p className="battle-action-prompt" aria-live="polite">
+                  {selectingEnemy
+                    ? 'Select an enemy to attack.'
+                    : selectedEnemy
+                      ? `Target selected: ${selectedEnemy.name}`
+                      : currentTurn && battle.playerCharacters.includes(currentTurn)
+                        ? `${currentTurn.name}'s actions`
+                        : currentTurn
+                          ? `${currentTurn.name} is taking a turn`
+                          : 'Waiting for a turn'}
+                </p>
+                {selectingEnemy ? (
+                  <div>
+                    <div className="battle-action-grid">
+                      {battle.enemies.filter((enemy) => enemy.currentHp > 0).map((enemy, index) => (
+                        <button
+                          className="battle-action-button"
+                          key={`${enemy.name}-${index}`}
+                          type="button"
+                          onClick={() => {
+                            setSelectedEnemy(enemy);
+                            setSelectingEnemy(false);
+                          }}
+                        >
+                          {enemy.name}
+                        </button>
+                      ))}
+                    </div>
+                    <button
+                      className="battle-action-cancel"
+                      type="button"
+                      onClick={() => setSelectingEnemy(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <div className="battle-action-grid">
+                    <button
+                      className="battle-action-button"
+                      type="button"
+                      disabled={!currentTurn || !battle.playerCharacters.includes(currentTurn)}
+                      onClick={() => {
+                        setSelectedEnemy(null);
+                        setSelectingEnemy(true);
+                      }}
+                    >
+                      Attack
+                    </button>
+                    <button className="battle-action-button" type="button" disabled>Defend</button>
+                    <button className="battle-action-button" type="button" disabled>Skill</button>
+                    <button className="battle-action-button" type="button" disabled>Item</button>
+                  </div>
+                )}
+              </div>
+            )}
             {!battleStarted && (
               <button className="game-start-button" type="button" onClick={startBattle}>
                 Start battle

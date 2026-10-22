@@ -1,6 +1,6 @@
 export class Character {
 
-  // Create Character from ancestor
+  // Create Character from ancestor option TODO
   constructor(name, heroClass, race, ancestor) {
     this.name = name;
     this.heroClass = heroClass;
@@ -39,9 +39,9 @@ export class Enemy {
     this.str = 1;
     this.con = 1;
     this.dex = 1;
-    this.int = 2;
-    this.wil = 2;
-    this.spd = 3;
+    this.int = 1;
+    this.wil = 1;
+    this.spd = 1;
     this.hp = 1;
     this.currentHp = this.hp;
     this.mp = 1;
