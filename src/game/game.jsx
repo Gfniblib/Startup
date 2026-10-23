@@ -21,7 +21,8 @@ export function Game({ playerCharacter, onCharacterCreated }) {
   const [battle, setBattle] = useState(null);
   const [currentTurn, setCurrentTurn] = useState(null);
   const [selectingEnemy, setSelectingEnemy] = useState(false);
-  const [selectedEnemy, setSelectedEnemy] = useState(null);
+  const [battleMessage, setBattleMessage] = useState('');
+  const [battleRevision, setBattleRevision] = useState(0);
   const [, setInitiativeRefresh] = useState(0);
   const [characterDraft, setCharacterDraft] = useState({
     name: '',
@@ -36,6 +37,13 @@ export function Game({ playerCharacter, onCharacterCreated }) {
       drawWaitingScreen(context);
     }
   }, [playerCharacter]);
+
+  useEffect(() => {
+    const context = canvasRef.current?.getContext('2d');
+    if (context && battleStarted && battle) {
+      drawBattleScene(context, battle);
+    }
+  }, [battleStarted, battle, battleRevision]);
 
   useEffect(() => {
     if (!battleStarted || !battle || currentTurn) {
@@ -112,7 +120,6 @@ export function Game({ playerCharacter, onCharacterCreated }) {
       }),
     });
 
-    drawBattleScene(context, battle);
     setBattle(battle);
     setBattleStarted(true);
   }
@@ -121,8 +128,47 @@ export function Game({ playerCharacter, onCharacterCreated }) {
     const nextActor = battle.finishTurn();
     setCurrentTurn(nextActor);
     setSelectingEnemy(false);
-    setSelectedEnemy(null);
     setInitiativeRefresh((revision) => revision + 1);
+  }
+
+  function attackEnemy(enemy) {
+    if (!currentTurn || !battle.playerCharacters.includes(currentTurn)) {
+      return;
+    }
+
+    const damage = battle.attack(currentTurn, enemy);
+    setBattleMessage(
+      `${currentTurn.name} dealt ${damage.toFixed(2)} damage to ${enemy.name}.`
+    );
+    setBattleRevision((revision) => revision + 1);
+    finishTurn();
+  }
+
+  function completeCurrentTurn() {
+    if (currentTurn && battle.enemies.includes(currentTurn)) {
+      const targets = battle.playerCharacters.filter((character) => character.currentHp > 0);
+      if (targets.length > 0) {
+        const target = targets[Math.floor(Math.random() * targets.length)];
+        const damage = battle.attack(currentTurn, target);
+        setBattleMessage(
+          `${currentTurn.name} dealt ${damage.toFixed(2)} damage to ${target.name}.`
+        );
+        setBattleRevision((revision) => revision + 1);
+      }
+    }
+
+    finishTurn();
+  }
+
+  function defend() {
+    if (!currentTurn || !battle.playerCharacters.includes(currentTurn)) {
+      return;
+    }
+
+    currentTurn.isDefending = true;
+    setBattleMessage(`${currentTurn.name} is defending and will take 50% damage until their next turn.`);
+    setBattleRevision((revision) => revision + 1);
+    finishTurn();
   }
 
   if (!playerCharacter) {
@@ -207,14 +253,15 @@ export function Game({ playerCharacter, onCharacterCreated }) {
                 <p className="battle-action-prompt" aria-live="polite">
                   {selectingEnemy
                     ? 'Select an enemy to attack.'
-                    : selectedEnemy
-                      ? `Target selected: ${selectedEnemy.name}`
-                      : currentTurn && battle.playerCharacters.includes(currentTurn)
-                        ? `${currentTurn.name}'s actions`
-                        : currentTurn
-                          ? `${currentTurn.name} is taking a turn`
-                          : 'Waiting for a turn'}
+                    : currentTurn && battle.playerCharacters.includes(currentTurn)
+                      ? `${currentTurn.name}'s actions`
+                      : currentTurn
+                        ? `${currentTurn.name} is taking a turn`
+                        : 'Waiting for a turn'}
                 </p>
+                {battleMessage && (
+                  <p className="battle-action-prompt" role="status">{battleMessage}</p>
+                )}
                 {selectingEnemy ? (
                   <div>
                     <div className="battle-action-grid">
@@ -224,8 +271,8 @@ export function Game({ playerCharacter, onCharacterCreated }) {
                           key={`${enemy.name}-${index}`}
                           type="button"
                           onClick={() => {
-                            setSelectedEnemy(enemy);
                             setSelectingEnemy(false);
+                            attackEnemy(enemy);
                           }}
                         >
                           {enemy.name}
@@ -235,7 +282,10 @@ export function Game({ playerCharacter, onCharacterCreated }) {
                     <button
                       className="battle-action-cancel"
                       type="button"
-                      onClick={() => setSelectingEnemy(false)}
+                      onClick={() => {
+                        setSelectingEnemy(false);
+                        setBattleMessage('');
+                      }}
                     >
                       Cancel
                     </button>
@@ -247,13 +297,20 @@ export function Game({ playerCharacter, onCharacterCreated }) {
                       type="button"
                       disabled={!currentTurn || !battle.playerCharacters.includes(currentTurn)}
                       onClick={() => {
-                        setSelectedEnemy(null);
+                        setBattleMessage('');
                         setSelectingEnemy(true);
                       }}
                     >
                       Attack
                     </button>
-                    <button className="battle-action-button" type="button" disabled>Defend</button>
+                    <button
+                      className="battle-action-button"
+                      type="button"
+                      disabled={!currentTurn || !battle.playerCharacters.includes(currentTurn)}
+                      onClick={defend}
+                    >
+                      Defend
+                    </button>
                     <button className="battle-action-button" type="button" disabled>Skill</button>
                     <button className="battle-action-button" type="button" disabled>Item</button>
                   </div>
@@ -279,7 +336,7 @@ export function Game({ playerCharacter, onCharacterCreated }) {
                 </p>
               )}
               {currentTurn && (
-                <button className="btn btn-primary mb-3" type="button" onClick={finishTurn}>
+                <button className="btn btn-primary mb-3" type="button" onClick={completeCurrentTurn}>
                   Complete {currentTurn.name}'s turn
                 </button>
               )}

@@ -7,18 +7,19 @@ export class Character {
     this.race = race;
     this.level = 1;
 
-    this.str = 1;
-    this.con = 1;
-    this.dex = 1;
-    this.int = 1;
-    this.wil = 1;
-    this.spd = 1;
-    this.hp = 1;
+    this.str = 3;
+    this.con = 3;
+    this.dex = 3;
+    this.int = 3;
+    this.wil = 3;
+    this.spd = 3;
+    this.hp = 50;
     this.currentHp = this.hp;
-    this.mp = 1;
+    this.mp = 15;
     this.currentMp = this.mp;
     this.initiative = 0;
     this.initiativeTieBreaker = Math.random();
+    this.isDefending = false;
 
     this.strChance = 50; // TODO
     this.conChance = 50;
@@ -48,6 +49,7 @@ export class Enemy {
     this.currentMp = this.mp;
     this.initiative = 0;
     this.initiativeTieBreaker = Math.random();
+    this.isDefending = false;
 
     this.xpValue = 10;
   }
@@ -65,9 +67,9 @@ export class Goblin extends Enemy {
   int = 1;
   wil = 3;
   spd = 2;
-  hp = 100;
+  hp = 20;
   currentHp = this.hp;
-  mp = 20;
+  mp = 10;
   currentMp = this.mp;
 }
 
@@ -83,7 +85,7 @@ export class Skeleton extends Enemy {
   int = 1;
   wil = 1;
   spd = 1;
-  hp = 150;
+  hp = 35;
   currentHp = this.hp;
   mp = 10;
   currentMp = this.mp;
@@ -96,14 +98,14 @@ export class Slime extends Enemy {
 
   // Override default stats for Slime
   str = 3;
-  con = 10;
+  con = 6;
   dex = 1;
   int = 1;
   wil = 1;
   spd = 1;
-  hp = 200;
+  hp = 50;
   currentHp = this.hp;
-  mp = 30;
+  mp = 20;
   currentMp = this.mp;
 }
 
@@ -135,7 +137,7 @@ export class Battle {
 
   getTurnOrder() {
     return [...this.playerCharacters, ...this.enemies]
-      .filter((entity) => entity.hp > 0)
+      .filter((entity) => entity.currentHp > 0)
       .sort((a, b) => {
         const aTicksRemaining = a.spd > 0
           ? Math.max(0, (1000 - a.initiative) / a.spd)
@@ -165,6 +167,7 @@ export class Battle {
     }
 
     const actor = readyEntities[Math.floor(Math.random() * readyEntities.length)];
+    actor.isDefending = false;
     this.currentTurn = actor;
     return actor;
   }
@@ -184,8 +187,28 @@ export class Battle {
     }
 
     const nextActor = readyEntities[Math.floor(Math.random() * readyEntities.length)];
+    nextActor.isDefending = false;
     this.currentTurn = nextActor;
     return nextActor;
+  }
+
+  attack(attacker, defender) {
+    if (attacker.currentHp <= 0 || defender.currentHp <= 0) {
+      throw new Error('Attacker and defender must be alive.');
+    }
+
+    const attack = attacker.atk ?? attacker.str;
+    const defense = defender.def ?? defender.con;
+    const baseDamage = Math.max(1, 5 * (attack - defense * 0.5));
+    const variation = 0.9 + Math.random() * 0.2;
+    const damage = Math.round(baseDamage * variation * 100) / 100
+      * (defender.isDefending ? 0.5 : 1);
+
+    defender.currentHp = Math.max(
+      0,
+      Math.round((defender.currentHp - damage) * 100) / 100
+    );
+    return damage;
   }
 
   addPlayerCharacter(character) {
