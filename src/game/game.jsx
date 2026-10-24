@@ -47,6 +47,17 @@ export function Game({
   }, [playerCharacter]);
 
   useEffect(() => {
+    if (!playerCharacter) {
+      setBattleStarted(false);
+      setBattle(null);
+      setCurrentTurn(null);
+      setSelectingEnemy(false);
+      setBattleEnded(false);
+      setBattleMessage('');
+    }
+  }, [playerCharacter]);
+
+  useEffect(() => {
     const context = canvasRef.current?.getContext('2d');
     if (context && battleStarted && battle) {
       drawBattleScene(context, battle);

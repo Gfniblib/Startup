@@ -136,6 +136,13 @@ export default function App() {
                                         {playerCharacter.race} {playerCharacter.heroClass}
                                     </p>
                                     <p className="mb-0">Devoted to {playerCharacter.devotion}</p>
+                                    <button
+                                      className="btn btn-outline-danger mt-3"
+                                      type="button"
+                                      onClick={handleCharacterDefeated}
+                                    >
+                                      Delete character
+                                    </button>
                                 </section>
                             )}
                             {characterSaveError && (
