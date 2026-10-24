@@ -4,7 +4,10 @@ import './app.css';
 import { BrowserRouter, NavLink, Route, Routes } from 'react-router-dom';
 import { Card, Col, Container, Nav, Row } from 'react-bootstrap';
 import { Login } from './login/login';
-import { saveCharacterForAccount } from './login/accountStorage';
+import {
+  deleteCharacterForAccount,
+  saveCharacterForAccount,
+} from './login/accountStorage';
 import { Game } from './game/game';
 import { Leaderboard } from './leaderboard/leaderboard';
 import { Character } from './game/gameComponent';
@@ -35,6 +38,40 @@ export default function App() {
         error instanceof Error ? error.message : 'Unable to save this character to the account.'
       );
     }
+  }
+
+  function handleCharacterUpdated(character) {
+    setPlayerCharacter(character);
+    setCharacterSaveError('');
+
+    if (!accountName) {
+      return;
+    }
+
+    try {
+      saveCharacterForAccount(accountName, character);
+    } catch (error) {
+      setCharacterSaveError(
+        error instanceof Error ? error.message : 'Unable to save this character to the account.'
+      );
+    }
+  }
+
+  function handleCharacterDefeated() {
+    if (accountName) {
+      try {
+        deleteCharacterForAccount(accountName);
+      } catch (error) {
+        setCharacterSaveError(
+          error instanceof Error ? error.message : 'Unable to delete this character from the account.'
+        );
+        return false;
+      }
+    }
+
+    setPlayerCharacter(null);
+    setCharacterSaveError('');
+    return true;
   }
 
   return (
@@ -79,6 +116,8 @@ export default function App() {
                                     <Game
                                         playerCharacter={playerCharacter}
                                         onCharacterCreated={handleCharacterCreated}
+                                        onCharacterUpdated={handleCharacterUpdated}
+                                        onCharacterDefeated={handleCharacterDefeated}
                                     />
                                 )}
                             />

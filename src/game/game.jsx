@@ -7,13 +7,19 @@ import {
   Goblin,
   Skeleton,
   Slime,
+  addCharacterToLeaderboard,
   drawBattleScene,
   drawWaitingScreen,
   getRandomWeather,
   testDelayedPlayerHelpMessage,
 } from './gameComponent';
 
-export function Game({ playerCharacter, onCharacterCreated }) {
+export function Game({
+  playerCharacter,
+  onCharacterCreated,
+  onCharacterUpdated,
+  onCharacterDefeated,
+}) {
   const canvasRef = useRef(null);
   const [playerHelpMessage, setPlayerHelpMessage] = useState('');
   const [weather] = useState(getRandomWeather);
@@ -22,6 +28,7 @@ export function Game({ playerCharacter, onCharacterCreated }) {
   const [currentTurn, setCurrentTurn] = useState(null);
   const [selectingEnemy, setSelectingEnemy] = useState(false);
   const [battleMessage, setBattleMessage] = useState('');
+  const [battleEnded, setBattleEnded] = useState(false);
   const [battleRevision, setBattleRevision] = useState(0);
   const [, setInitiativeRefresh] = useState(0);
   const [characterDraft, setCharacterDraft] = useState({
@@ -121,14 +128,71 @@ export function Game({ playerCharacter, onCharacterCreated }) {
     });
 
     setBattle(battle);
+    setBattleMessage('');
+    setBattleEnded(false);
     setBattleStarted(true);
   }
 
+  function resolveBattleOutcome() {
+    const livingPlayers = battle.playerCharacters.filter((character) => character.currentHp > 0);
+    const livingEnemies = battle.enemies.filter((enemy) => enemy.currentHp > 0);
+
+    if (livingPlayers.length === 0) {
+      addCharacterToLeaderboard(playerCharacter);
+      if (onCharacterDefeated(playerCharacter)) {
+        setBattleStarted(false);
+        setBattle(null);
+        setBattleEnded(false);
+        setBattleMessage('');
+      } else {
+        setBattleMessage(
+          `${playerCharacter.name} was defeated and added to the leaderboard, but their saved character could not be deleted.`
+        );
+        setBattleEnded(true);
+      }
+      setCurrentTurn(null);
+      return true;
+    }
+
+    if (livingEnemies.length === 0) {
+      const earnedXp = battle.enemies.reduce((total, enemy) => total + enemy.xpValue, 0);
+      playerCharacter.xp = (playerCharacter.xp ?? 0) + earnedXp;
+
+      let levelsGained = 0;
+      let xpToNextLevel = playerCharacter.xpToNextLevel
+        ?? 100 * (playerCharacter.level ?? 1) ** 1.2;
+      while (playerCharacter.xp >= xpToNextLevel) {
+        playerCharacter.xp -= xpToNextLevel;
+        playerCharacter.level = (playerCharacter.level ?? 1) + 1;
+        xpToNextLevel = 100 * playerCharacter.level ** 1.2;
+        levelsGained += 1;
+      }
+      playerCharacter.xpToNextLevel = xpToNextLevel;
+
+      onCharacterUpdated(playerCharacter);
+      setBattleMessage(
+        `${playerCharacter.name} earned ${earnedXp} XP${levelsGained > 0
+          ? ` and gained ${levelsGained} level${levelsGained === 1 ? '' : 's'}`
+          : ''}.`
+      );
+      setBattleEnded(true);
+      setCurrentTurn(null);
+      return true;
+    }
+
+    return false;
+  }
+
   function finishTurn() {
-    const nextActor = battle.finishTurn();
-    setCurrentTurn(nextActor);
+    battle.finishTurn();
     setSelectingEnemy(false);
     setInitiativeRefresh((revision) => revision + 1);
+
+    if (resolveBattleOutcome()) {
+      return;
+    }
+
+    setCurrentTurn(battle.currentTurn);
   }
 
   function attackEnemy(enemy) {
@@ -169,6 +233,15 @@ export function Game({ playerCharacter, onCharacterCreated }) {
     setBattleMessage(`${currentTurn.name} is defending and will take 50% damage until their next turn.`);
     setBattleRevision((revision) => revision + 1);
     finishTurn();
+  }
+
+  function retryCharacterDeletion() {
+    if (onCharacterDefeated(playerCharacter)) {
+      setBattleStarted(false);
+      setBattle(null);
+      setBattleEnded(false);
+      setBattleMessage('');
+    }
   }
 
   if (!playerCharacter) {
@@ -251,18 +324,32 @@ export function Game({ playerCharacter, onCharacterCreated }) {
             {battleStarted && battle && (
               <div className="battle-action-panel">
                 <p className="battle-action-prompt" aria-live="polite">
-                  {selectingEnemy
-                    ? 'Select an enemy to attack.'
-                    : currentTurn && battle.playerCharacters.includes(currentTurn)
-                      ? `${currentTurn.name}'s actions`
-                      : currentTurn
-                        ? `${currentTurn.name} is taking a turn`
-                        : 'Waiting for a turn'}
+                  {battleEnded
+                    ? 'Battle complete'
+                    : selectingEnemy
+                      ? 'Select an enemy to attack.'
+                      : currentTurn && battle.playerCharacters.includes(currentTurn)
+                        ? `${currentTurn.name}'s actions`
+                        : currentTurn
+                          ? `${currentTurn.name} is taking a turn`
+                          : 'Waiting for a turn'}
                 </p>
                 {battleMessage && (
                   <p className="battle-action-prompt" role="status">{battleMessage}</p>
                 )}
-                {selectingEnemy ? (
+                {battleEnded ? (
+                  playerCharacter.currentHp > 0
+                    ? (
+                      <button className="battle-action-button" type="button" onClick={startBattle}>
+                        Start next battle
+                      </button>
+                    )
+                    : (
+                      <button className="battle-action-button" type="button" onClick={retryCharacterDeletion}>
+                        Retry character deletion
+                      </button>
+                    )
+                ) : selectingEnemy ? (
                   <div>
                     <div className="battle-action-grid">
                       {battle.enemies.filter((enemy) => enemy.currentHp > 0).map((enemy, index) => (

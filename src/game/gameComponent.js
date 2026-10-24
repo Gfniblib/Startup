@@ -6,6 +6,9 @@ export class Character {
     this.heroClass = heroClass;
     this.race = race;
     this.level = 1;
+    this.xp = 0;
+    this.xpToNextLevel = 100 * this.level ** 1.2;
+
 
     this.str = 3;
     this.con = 3;
@@ -273,6 +276,14 @@ export const leaderboardData = [
   { hero: 'Nyra Bloom', heroClass: 'Wild Sage', score: 12600 },
   { hero: 'Orin Vale', heroClass: 'Guardian', score: 11920 },
 ];
+
+export function addCharacterToLeaderboard(character) {
+  leaderboardData.push({
+    hero: character.name,
+    heroClass: character.heroClass,
+    score: character.xp ?? 0,
+  });
+}
 
 export function getRandomWeather() {
   const randomIndex = Math.floor(Math.random() * weatherEffects.length);

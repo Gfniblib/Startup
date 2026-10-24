@@ -31,3 +31,17 @@ export function saveCharacterForAccount(username, character) {
   account.character = JSON.parse(JSON.stringify(character));
   saveAccounts(accounts);
 }
+
+export function deleteCharacterForAccount(username) {
+  const usernameKey = username.trim().toLowerCase();
+  const accounts = readAccounts();
+  const account = accounts.find((entry) => entry.usernameKey === usernameKey);
+
+  if (!account) {
+    throw new Error('Could not find the logged-in account to delete this character.');
+  }
+
+  delete account.character;
+  account.characterId = null;
+  saveAccounts(accounts);
+}
