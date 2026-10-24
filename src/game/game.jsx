@@ -28,6 +28,9 @@ export function Game({
   const [battle, setBattle] = useState(null);
   const [currentTurn, setCurrentTurn] = useState(null);
   const [selectingEnemy, setSelectingEnemy] = useState(false);
+  const [selectingAlly, setSelectingAlly] = useState(false);
+  const [selectingSkill, setSelectingSkill] = useState(false);
+  const [selectedSkill, setSelectedSkill] = useState(null);
   const [battleMessage, setBattleMessage] = useState('');
   const [battleEnded, setBattleEnded] = useState(false);
   const [battleRevision, setBattleRevision] = useState(0);
@@ -52,6 +55,9 @@ export function Game({
       setBattle(null);
       setCurrentTurn(null);
       setSelectingEnemy(false);
+      setSelectingAlly(false);
+      setSelectingSkill(false);
+      setSelectedSkill(null);
       setBattleEnded(false);
       setBattleMessage('');
     }
@@ -158,6 +164,9 @@ export function Game({
     setBattle(battle);
     setBattleMessage('');
     setBattleEnded(false);
+    setSelectingSkill(false);
+    setSelectingAlly(false);
+    setSelectedSkill(null);
     setBattleStarted(true);
   }
 
@@ -235,6 +244,9 @@ export function Game({
   function finishTurn() {
     battle.finishTurn();
     setSelectingEnemy(false);
+    setSelectingAlly(false);
+    setSelectingSkill(false);
+    setSelectedSkill(null);
     setInitiativeRefresh((revision) => revision + 1);
 
     if (resolveBattleOutcome()) {
@@ -253,6 +265,36 @@ export function Game({
     setBattleMessage(
       `${currentTurn.name} dealt ${damage.toFixed(2)} damage to ${enemy.name}.`
     );
+    setBattleRevision((revision) => revision + 1);
+    finishTurn();
+  }
+
+  function selectSkill(skill) {
+    if (!currentTurn || !battle.playerCharacters.includes(currentTurn)) {
+      return;
+    }
+
+    if (currentTurn.currentMp < skill.mpCost) {
+      setBattleMessage(`${currentTurn.name} does not have enough MP to use ${skill.name}.`);
+      setSelectingSkill(false);
+      return;
+    }
+
+    setSelectedSkill(skill);
+    setSelectingSkill(false);
+
+    if (skill.target === 'allEnemies') {
+      useSelectedSkill(skill);
+    } else if (skill.target === 'ally') {
+      setSelectingAlly(true);
+    } else {
+      setSelectingEnemy(true);
+    }
+  }
+
+  function useSelectedSkill(skill, target = null) {
+    const message = battle.useSkill(currentTurn, skill.id, target);
+    setBattleMessage(message);
     setBattleRevision((revision) => revision + 1);
     finishTurn();
   }
@@ -359,8 +401,14 @@ export function Game({
                 <p className="battle-action-prompt" aria-live="polite">
                   {battleEnded
                     ? 'Battle complete'
+                    : selectingAlly
+                      ? `Choose a teammate for ${selectedSkill?.name}.`
                     : selectingEnemy
-                      ? 'Select an enemy to attack.'
+                      ? selectedSkill
+                        ? `Choose an enemy for ${selectedSkill.name}.`
+                        : 'Select an enemy to attack.'
+                    : selectingSkill
+                      ? `${currentTurn?.name}'s skills`
                       : currentTurn && battle.playerCharacters.includes(currentTurn)
                         ? `${currentTurn.name}'s actions`
                         : currentTurn
@@ -391,8 +439,12 @@ export function Game({
                           key={`${enemy.name}-${index}`}
                           type="button"
                           onClick={() => {
-                            setSelectingEnemy(false);
-                            attackEnemy(enemy);
+                            if (selectedSkill) {
+                              useSelectedSkill(selectedSkill, enemy);
+                            } else {
+                              setSelectingEnemy(false);
+                              attackEnemy(enemy);
+                            }
                           }}
                         >
                           {enemy.name}
@@ -404,10 +456,64 @@ export function Game({
                       type="button"
                       onClick={() => {
                         setSelectingEnemy(false);
+                        setSelectedSkill(null);
                         setBattleMessage('');
                       }}
                     >
                       Cancel
+                    </button>
+                  </div>
+                ) : selectingAlly ? (
+                  <div>
+                    <div className="battle-action-grid">
+                      {battle.playerCharacters.filter((ally) => ally.currentHp > 0).map((ally, index) => (
+                        <button
+                          className="battle-action-button"
+                          key={`${ally.name}-${index}`}
+                          type="button"
+                          onClick={() => useSelectedSkill(selectedSkill, ally)}
+                        >
+                          {ally.name} ({ally.currentHp}/{ally.hp} HP)
+                        </button>
+                      ))}
+                    </div>
+                    <button
+                      className="battle-action-cancel"
+                      type="button"
+                      onClick={() => {
+                        setSelectingAlly(false);
+                        setSelectedSkill(null);
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : selectingSkill ? (
+                  <div>
+                    <div className="battle-action-grid">
+                      {currentTurn.skills.map((skill) => (
+                        <button
+                          className="battle-action-button"
+                          key={skill.id}
+                          type="button"
+                          disabled={currentTurn.currentMp < skill.mpCost}
+                          onClick={() => selectSkill(skill)}
+                        >
+                          {skill.name} ({skill.mpCost} MP)
+                        </button>
+                      ))}
+                    </div>
+                    {currentTurn.skills.map((skill) => (
+                      <p className="battle-action-prompt" key={`${skill.id}-description`}>
+                        {skill.description}
+                      </p>
+                    ))}
+                    <button
+                      className="battle-action-cancel"
+                      type="button"
+                      onClick={() => setSelectingSkill(false)}
+                    >
+                      Back
                     </button>
                   </div>
                 ) : (
@@ -431,7 +537,18 @@ export function Game({
                     >
                       Defend
                     </button>
-                    <button className="battle-action-button" type="button" disabled>Skill</button>
+                    <button
+                      className="battle-action-button"
+                      type="button"
+                      disabled={!currentTurn || !battle.playerCharacters.includes(currentTurn)
+                        || currentTurn.skills.length === 0}
+                      onClick={() => {
+                        setBattleMessage('');
+                        setSelectingSkill(true);
+                      }}
+                    >
+                      Skill
+                    </button>
                     <button className="battle-action-button" type="button" disabled>Item</button>
                   </div>
                 )}

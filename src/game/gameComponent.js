@@ -23,6 +23,7 @@ export class Character {
     this.initiative = 0;
     this.initiativeTieBreaker = Math.random();
     this.isDefending = false;
+    this.skills = getClassSkills(heroClass);
 
     this.strChance = 50; // TODO
     this.conChance = 50;
@@ -33,6 +34,41 @@ export class Character {
     this.hpChance = 50;
     this.mpChance = 50;
   }
+}
+
+function getClassSkills(heroClass) {
+  const skillByClass = {
+    Warrior: {
+      id: 'power-strike',
+      name: 'Power Strike',
+      description: 'Deal 50% more physical damage. Costs 5 MP.',
+      target: 'enemy',
+      mpCost: 5,
+    },
+    Cleric: {
+      id: 'mend',
+      name: 'Mend',
+      description: 'Restore 10 HP plus healing based on INT. Costs 5 MP.',
+      target: 'ally',
+      mpCost: 5,
+    },
+    Mage: {
+      id: 'arcane-blast',
+      name: 'Arcane Blast',
+      description: 'Deal magic damage based on INT and the enemy WIL. Costs 5 MP.',
+      target: 'enemy',
+      mpCost: 5,
+    },
+    Ranger: {
+      id: 'volley',
+      name: 'Volley',
+      description: 'Deal damage to all enemies based on STR. Costs 5 MP.',
+      target: 'allEnemies',
+      mpCost: 5,
+    },
+  };
+
+  return skillByClass[heroClass] ? [{ ...skillByClass[heroClass] }] : [];
 }
 
 const samplePartyTemplates = [
@@ -234,14 +270,14 @@ export class Battle {
     return this.tick();
   }
 
-  attack(attacker, defender) {
+  attack(attacker, defender, damageMultiplier = 1) {
     if (attacker.currentHp <= 0 || defender.currentHp <= 0) {
       throw new Error('Attacker and defender must be alive.');
     }
 
     const attack = attacker.atk ?? attacker.str;
     const defense = defender.def ?? defender.con;
-    const baseDamage = Math.max(1, 5 * (attack - defense * 0.5));
+    const baseDamage = Math.max(1, 5 * (attack - defense * 0.5)) * damageMultiplier;
     const variation = 0.9 + Math.random() * 0.2;
     const damage = Math.round(baseDamage * variation * 100) / 100
       * (defender.isDefending ? 0.5 : 1);
@@ -251,6 +287,59 @@ export class Battle {
       Math.round((defender.currentHp - damage) * 100) / 100
     );
     return damage;
+  }
+
+  useSkill(actor, skillId, target = null) {
+    const skill = actor.skills?.find((candidate) => candidate.id === skillId);
+    if (!skill) {
+      throw new Error('This character does not know that skill.');
+    }
+
+    if (actor.currentHp <= 0 || actor.currentMp < skill.mpCost) {
+      throw new Error('This character cannot use that skill right now.');
+    }
+
+    if (skill.target === 'enemy' && (!this.enemies.includes(target) || target.currentHp <= 0)) {
+      throw new Error('Choose a living enemy for this skill.');
+    }
+
+    if (
+      skill.target === 'ally'
+      && (!this.playerCharacters.includes(target) || target.currentHp <= 0)
+    ) {
+      throw new Error('Choose a living teammate for this skill.');
+    }
+
+    actor.currentMp -= skill.mpCost;
+
+    if (skill.id === 'power-strike') {
+      const damage = this.attack(actor, target, 1.5);
+      return `${actor.name} used Power Strike on ${target.name} for ${damage.toFixed(2)} damage.`;
+    }
+
+    if (skill.id === 'mend') {
+      const healing = Math.round(10 + target.hp * actor.int / 100);
+      const restored = Math.max(0, Math.min(healing, target.hp - target.currentHp));
+      target.currentHp += restored;
+      return `${actor.name} used Mend on ${target.name}, restoring ${restored} HP.`;
+    }
+
+    if (skill.id === 'arcane-blast') {
+      const damage = Math.max(1, 10 + (actor.int - target.wil) * 5);
+      target.currentHp = Math.max(0, target.currentHp - damage);
+      return `${actor.name} used Arcane Blast on ${target.name} for ${damage} damage.`;
+    }
+
+    if (skill.id === 'volley') {
+      const damage = Math.max(1, Math.round(actor.str * 2));
+      const targets = this.enemies.filter((enemy) => enemy.currentHp > 0);
+      targets.forEach((enemy) => {
+        enemy.currentHp = Math.max(0, enemy.currentHp - damage);
+      });
+      return `${actor.name} used Volley, dealing ${damage} damage to ${targets.length} enemies.`;
+    }
+
+    throw new Error('This skill has no battle effect.');
   }
 
   addPlayerCharacter(character) {
