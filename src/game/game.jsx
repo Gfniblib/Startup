@@ -8,6 +8,7 @@ import {
   Skeleton,
   Slime,
   addCharacterToLeaderboard,
+  createSamplePartyMembers,
   drawBattleScene,
   drawWaitingScreen,
   getRandomWeather,
@@ -50,29 +51,45 @@ export function Game({
     if (context && battleStarted && battle) {
       drawBattleScene(context, battle);
     }
-  }, [battleStarted, battle, battleRevision]);
+  }, [battleStarted, battle, battleRevision, currentTurn]);
 
   useEffect(() => {
-    if (!battleStarted || !battle || currentTurn) {
+    if (!battleStarted || !battle || currentTurn || battleEnded) {
+      return;
+    }
+
+    const actor = battle.tick();
+    setCurrentTurn(actor);
+    setInitiativeRefresh((revision) => revision + 1);
+  }, [battleStarted, battle, currentTurn, battleEnded]);
+
+  useEffect(() => {
+    if (
+      !battleStarted
+      || !battle
+      || !currentTurn
+      || !battle.enemies.includes(currentTurn)
+      || battleEnded
+    ) {
       return undefined;
     }
 
-    let ticksSinceRefresh = 0;
-    const timer = window.setInterval(() => {
-      const actor = battle.tick();
-      ticksSinceRefresh += 1;
-
-      if (actor) {
-        setCurrentTurn(actor);
-        setInitiativeRefresh((revision) => revision + 1);
-      } else if (ticksSinceRefresh >= 10) {
-        setInitiativeRefresh((revision) => revision + 1);
-        ticksSinceRefresh = 0;
+    const timer = window.setTimeout(() => {
+      const targets = battle.playerCharacters.filter((character) => character.currentHp > 0);
+      if (targets.length > 0) {
+        const target = targets[Math.floor(Math.random() * targets.length)];
+        const damage = battle.attack(currentTurn, target);
+        setBattleMessage(
+          `${currentTurn.name} dealt ${damage.toFixed(2)} damage to ${target.name}.`
+        );
+        setBattleRevision((revision) => revision + 1);
       }
-    }, 10);
 
-    return () => window.clearInterval(timer);
-  }, [battleStarted, battle, currentTurn]);
+      finishTurn();
+    }, 500);
+
+    return () => window.clearTimeout(timer);
+  }, [battleStarted, battle, currentTurn, battleEnded]);
 
   useEffect(() => {
     if (!playerCharacter) {
@@ -120,7 +137,7 @@ export function Game({
     // TODO base enemies off of player strength and location
     const enemyTypes = [Goblin, Skeleton, Slime];
     const battle = new Battle({
-      playerCharacters: [playerCharacter],
+      playerCharacters: [playerCharacter, ...createSamplePartyMembers()],
       enemies: Array.from({ length: 4 }, (_, index) => {
         const EnemyType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
         return new EnemyType(`${EnemyType.name} ${index + 1}`);
@@ -139,6 +156,7 @@ export function Game({
 
     if (livingPlayers.length === 0) {
       addCharacterToLeaderboard(playerCharacter);
+      battle.currentTurn = null;
       if (onCharacterDefeated(playerCharacter)) {
         setBattleStarted(false);
         setBattle(null);
@@ -155,6 +173,7 @@ export function Game({
     }
 
     if (livingEnemies.length === 0) {
+      battle.currentTurn = null;
       const earnedXp = battle.enemies.reduce((total, enemy) => total + enemy.xpValue, 0);
       playerCharacter.xp = (playerCharacter.xp ?? 0) + earnedXp;
 
@@ -165,6 +184,25 @@ export function Game({
         playerCharacter.xp -= xpToNextLevel;
         playerCharacter.level = (playerCharacter.level ?? 1) + 1;
         xpToNextLevel = 100 * playerCharacter.level ** 1.2;
+        [
+          ['str', 'strChance'],
+          ['con', 'conChance'],
+          ['dex', 'dexChance'],
+          ['int', 'intChance'],
+          ['wil', 'wilChance'],
+          ['spd', 'spdChance'],
+          ['hp', 'hpChance'],
+          ['mp', 'mpChance'],
+        ].forEach(([stat, chanceStat]) => {
+          if (Math.random() * 100 < (playerCharacter[chanceStat] ?? 0)) {
+            playerCharacter[stat] += 1;
+            if (stat === 'hp') {
+              playerCharacter.currentHp += 10;
+            } else if (stat === 'mp') {
+              playerCharacter.currentMp += 3;
+            }
+          }
+        });
         levelsGained += 1;
       }
       playerCharacter.xpToNextLevel = xpToNextLevel;
@@ -205,22 +243,6 @@ export function Game({
       `${currentTurn.name} dealt ${damage.toFixed(2)} damage to ${enemy.name}.`
     );
     setBattleRevision((revision) => revision + 1);
-    finishTurn();
-  }
-
-  function completeCurrentTurn() {
-    if (currentTurn && battle.enemies.includes(currentTurn)) {
-      const targets = battle.playerCharacters.filter((character) => character.currentHp > 0);
-      if (targets.length > 0) {
-        const target = targets[Math.floor(Math.random() * targets.length)];
-        const damage = battle.attack(currentTurn, target);
-        setBattleMessage(
-          `${currentTurn.name} dealt ${damage.toFixed(2)} damage to ${target.name}.`
-        );
-        setBattleRevision((revision) => revision + 1);
-      }
-    }
-
     finishTurn();
   }
 
@@ -419,13 +441,12 @@ export function Game({
               {currentTurn && (
                 <p className="current-turn" role="status">
                   Current turn: <strong>{currentTurn.name}</strong>
-                  <span> Resolve this entity's action to resume initiative.</span>
+                  <span>
+                    {battle.enemies.includes(currentTurn)
+                      ? ' Enemy action in progress.'
+                      : ' Choose an action above.'}
+                  </span>
                 </p>
-              )}
-              {currentTurn && (
-                <button className="btn btn-primary mb-3" type="button" onClick={completeCurrentTurn}>
-                  Complete {currentTurn.name}'s turn
-                </button>
               )}
               <ol className="turn-order-list">
                 {battle.getTurnOrder().map((entity, index) => (

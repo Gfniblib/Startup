@@ -35,6 +35,38 @@ export class Character {
   }
 }
 
+const samplePartyTemplates = [
+  {
+    name: 'Borin Stoneguard',
+    heroClass: 'Warrior',
+    race: 'Dwarf',
+    stats: { str: 5, con: 5, dex: 2, int: 2, wil: 3, spd: 3, hp: 70, mp: 10 },
+  },
+  {
+    name: 'Lyra Moonweaver',
+    heroClass: 'Mage',
+    race: 'Elf',
+    stats: { str: 2, con: 2, dex: 3, int: 5, wil: 5, spd: 3, hp: 40, mp: 35 },
+  },
+  {
+    name: 'Tarin Quickstep',
+    heroClass: 'Ranger',
+    race: 'Human',
+    stats: { str: 4, con: 3, dex: 5, int: 3, wil: 3, spd: 5, hp: 50, mp: 15 },
+  },
+];
+
+export function createSamplePartyMembers() {
+  return samplePartyTemplates.map(({ name, heroClass, race, stats }) => {
+    const character = new Character(name, heroClass, race);
+    Object.assign(character, stats, {
+      currentHp: stats.hp,
+      currentMp: stats.mp,
+    });
+    return character;
+  });
+}
+
 export class Enemy {
   constructor(name, enemyType) {
     this.name = name;
@@ -142,12 +174,16 @@ export class Battle {
     return [...this.playerCharacters, ...this.enemies]
       .filter((entity) => entity.currentHp > 0)
       .sort((a, b) => {
-        const aTicksRemaining = a.spd > 0
-          ? Math.max(0, (1000 - a.initiative) / a.spd)
-          : Infinity;
-        const bTicksRemaining = b.spd > 0
-          ? Math.max(0, (1000 - b.initiative) / b.spd)
-          : Infinity;
+        const aTicksRemaining = a.initiative >= 1000
+          ? 0
+          : a.spd > 0
+            ? (1000 - a.initiative) / a.spd
+            : Infinity;
+        const bTicksRemaining = b.initiative >= 1000
+          ? 0
+          : b.spd > 0
+            ? (1000 - b.initiative) / b.spd
+            : Infinity;
 
         return aTicksRemaining - bTicksRemaining
           || a.initiativeTieBreaker - b.initiativeTieBreaker;
@@ -160,16 +196,28 @@ export class Battle {
     }
 
     const aliveEntities = this.getTurnOrder();
-    aliveEntities.forEach((entity) => {
-      entity.initiative += entity.spd;
-    });
+    const nextActors = aliveEntities
+      .map((entity) => ({
+        entity,
+        ticksUntilReady: entity.initiative >= 1000
+          ? 0
+          : entity.spd > 0
+            ? (1000 - entity.initiative) / entity.spd
+            : Infinity,
+      }))
+      .filter((candidate) => Number.isFinite(candidate.ticksUntilReady))
+      .sort((a, b) => a.ticksUntilReady - b.ticksUntilReady
+        || a.entity.initiativeTieBreaker - b.entity.initiativeTieBreaker);
 
-    const readyEntities = aliveEntities.filter((entity) => entity.initiative >= 1000);
-    if (readyEntities.length === 0) {
+    if (nextActors.length === 0) {
       return null;
     }
 
-    const actor = readyEntities[Math.floor(Math.random() * readyEntities.length)];
+    const { entity: actor, ticksUntilReady } = nextActors[0];
+    aliveEntities.forEach((entity) => {
+      entity.initiative += entity.spd * ticksUntilReady;
+    });
+    actor.initiative = Math.max(1000, actor.initiative);
     actor.isDefending = false;
     this.currentTurn = actor;
     return actor;
@@ -183,16 +231,7 @@ export class Battle {
     this.currentTurn.initiative -= 1000;
     this.currentTurn = null;
 
-    const readyEntities = this.getTurnOrder()
-      .filter((entity) => entity.initiative >= 1000);
-    if (readyEntities.length === 0) {
-      return null;
-    }
-
-    const nextActor = readyEntities[Math.floor(Math.random() * readyEntities.length)];
-    nextActor.isDefending = false;
-    this.currentTurn = nextActor;
-    return nextActor;
+    return this.tick();
   }
 
   attack(attacker, defender) {
@@ -324,6 +363,7 @@ export function drawBattleScene(context, battle, scene = {}) {
 
   //Scene floor
   render(context, battle);
+  drawActorStats(context, battle.currentTurn);
 
   // Draw the player character (placeholder)
 
@@ -504,6 +544,52 @@ function drawStats(context, characters, side) {
     );
   });
 
+  context.restore();
+}
+
+function drawActorStats(context, actor) {
+  if (!actor) {
+    return;
+  }
+
+  const { width, height } = context.canvas;
+  const panelWidth = Math.min(width * 0.34, 280);
+  const panelHeight = Math.min(height * 0.31, 168);
+  const padding = 12;
+  const x = width - panelWidth - 16;
+  const y = height - panelHeight - 16;
+  const fontSize = Math.max(12, height * 0.026);
+  const stats = [
+    ['STR', actor.str],
+    ['CON', actor.con],
+    ['DEX', actor.dex],
+    ['INT', actor.int],
+    ['WIL', actor.wil],
+    ['SPD', actor.spd],
+    ['HP', `${actor.currentHp}/${actor.hp}`],
+    ['MP', `${actor.currentMp}/${actor.mp}`],
+  ];
+
+  context.save();
+  context.fillStyle = 'rgba(23, 35, 52, 0.94)';
+  context.fillRect(x, y, panelWidth, panelHeight);
+  context.strokeStyle = '#ffffff';
+  context.strokeRect(x, y, panelWidth, panelHeight);
+  context.fillStyle = '#ffffff';
+  context.textAlign = 'left';
+  context.textBaseline = 'middle';
+  context.font = `bold ${fontSize}px sans-serif`;
+  context.fillText(actor.name, x + padding, y + padding + fontSize / 2, panelWidth - padding * 2);
+
+  context.font = `${fontSize}px sans-serif`;
+  stats.forEach(([label, value], index) => {
+    const column = Math.floor(index / 4);
+    const row = index % 4;
+    const columnWidth = (panelWidth - padding * 2) / 2;
+    const statX = x + padding + column * columnWidth;
+    const statY = y + padding + fontSize * 1.6 + row * fontSize * 1.35;
+    context.fillText(`${label}: ${value}`, statX, statY, columnWidth - 4);
+  });
   context.restore();
 }
 
