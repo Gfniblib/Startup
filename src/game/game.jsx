@@ -7,7 +7,6 @@ import {
   Goblin,
   Skeleton,
   Slime,
-  addCharacterToLeaderboard,
   createSamplePartyMembers,
   drawBattleScene,
   drawWaitingScreen,
@@ -19,6 +18,7 @@ export function Game({
   onCharacterCreated,
   onCharacterUpdated,
   onCharacterDefeated,
+  onScoreError,
 }) {
   const canvasRef = useRef(null);
   const [playerHelpMessage, setPlayerHelpMessage] = useState('');
@@ -204,7 +204,7 @@ export function Game({
     const livingEnemies = battle.enemies.filter((enemy) => enemy.currentHp > 0);
 
     if (livingPlayers.length === 0) {
-      addCharacterToLeaderboard(playerCharacter);
+      submitScore(playerCharacter);
       battle.currentTurn = null;
       if (onCharacterDefeated(playerCharacter)) {
         setBattleStarted(false);
@@ -268,6 +268,28 @@ export function Game({
     }
 
     return false;
+  }
+
+  async function submitScore(character) {
+    try {
+      const response = await fetch('/api/score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+          hero: character.name,
+          heroClass: character.heroClass,
+          score: character.xp ?? 0,
+        }),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.msg || 'Unable to submit this score.');
+      }
+      onScoreError('');
+    } catch (error) {
+      onScoreError(error instanceof Error ? error.message : 'Unable to submit this score.');
+    }
   }
 
   function finishTurn() {

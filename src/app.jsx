@@ -17,6 +17,7 @@ export default function App() {
   const [accountName, setAccountName] = useState('');
   const [playerCharacter, setPlayerCharacter] = useState(null);
   const [characterSaveError, setCharacterSaveError] = useState('');
+  const [scoreError, setScoreError] = useState('');
 
   function handleAccountAuthenticated(username) {
     let account;
@@ -85,10 +86,40 @@ export default function App() {
     return true;
   }
 
+  async function handleManualCharacterDeletion() {
+    if (!playerCharacter || !accountName) {
+      handleCharacterDefeated();
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+          hero: playerCharacter.name,
+          heroClass: playerCharacter.heroClass,
+          score: playerCharacter.xp ?? 0,
+        }),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.msg || 'Unable to save this character score.');
+      }
+
+      setScoreError('');
+      handleCharacterDefeated();
+    } catch (error) {
+      setScoreError(error instanceof Error ? error.message : 'Unable to save this character score.');
+    }
+  }
+
   function handleLoggedOut() {
     setAccountName('');
     setPlayerCharacter(null);
     setCharacterSaveError('');
+    setScoreError('');
   }
 
   return (
@@ -137,6 +168,7 @@ export default function App() {
                                         onCharacterCreated={handleCharacterCreated}
                                         onCharacterUpdated={handleCharacterUpdated}
                                         onCharacterDefeated={handleCharacterDefeated}
+                                        onScoreError={setScoreError}
                                     />
                                 )}
                             />
@@ -167,7 +199,7 @@ export default function App() {
                                     <button
                                       className="btn btn-outline-danger mt-3"
                                       type="button"
-                                      onClick={handleCharacterDefeated}
+                                      onClick={handleManualCharacterDeletion}
                                     >
                                       Delete character
                                     </button>
@@ -176,6 +208,11 @@ export default function App() {
                             {characterSaveError && (
                                 <p className="text-danger mt-3 mb-0" role="alert">
                                     {characterSaveError}
+                                </p>
+                            )}
+                            {scoreError && (
+                                <p className="text-danger mt-3 mb-0" role="alert">
+                                    {scoreError}
                                 </p>
                             )}
                         </Card>

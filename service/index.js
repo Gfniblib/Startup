@@ -9,7 +9,11 @@ const authCookieName = 'token';
 
 // The scores and users are saved in memory and disappear whenever the service is restarted.
 let users = [];
-let scores = [];
+let scores = [
+  { hero: 'Aria Dawn', heroClass: 'Rogue Archivist', score: 14800 },
+  { hero: 'Kael Frost', heroClass: 'Frostblade', score: 13250 },
+  { hero: 'Nyra Bloom', heroClass: 'Wild Sage', score: 12600 },
+];
 let weatherCache = null;
 const weatherApiKey = process.env.OPENWEATHER_API_KEY;
 const weatherRefreshInterval = 60 * 60 * 1000;
@@ -76,26 +80,27 @@ const verifyAuth = async (req, res, next) => {
   }
 };
 
-const verifyDevAuth = async (req, res, next) => {
-  const user = await findUser('token', req.cookies[authCookieName]);
-  if (!user) {
-    res.status(401).send({ msg: 'Unauthorized' });
-  } else if (!user.email.toLowerCase().includes('dev')) {
-    res.status(403).send({ msg: 'Not allowed' });
-  } else {
-    req.user = user;
-    next();
-  }
-};
-
 // GetScores
 apiRouter.get('/scores', verifyAuth, (_req, res) => {
   res.send(scores);
 });
 
 // SubmitScore
-apiRouter.post('/score', verifyDevAuth, (req, res) => {
-  scores = updateScores({ ...req.body, name: req.user.email });
+apiRouter.post('/score', verifyAuth, (req, res) => {
+  const { hero, heroClass, score } = req.body;
+  if (
+    typeof hero !== 'string'
+    || !hero.trim()
+    || typeof heroClass !== 'string'
+    || !heroClass.trim()
+    || !Number.isFinite(score)
+    || score < 0
+  ) {
+    res.status(400).send({ msg: 'A hero, class, and non-negative numeric score are required.' });
+    return;
+  }
+
+  scores = updateScores({ hero: hero.trim(), heroClass: heroClass.trim(), score });
   res.send(scores);
 });
 
@@ -163,7 +168,7 @@ async function findUser(field, value) {
 function setAuthCookie(res, authToken) {
   res.cookie(authCookieName, authToken, {
     maxAge: 1000 * 60 * 60 * 24 * 365,
-    secure: true,
+    secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
     sameSite: 'strict',
   });
