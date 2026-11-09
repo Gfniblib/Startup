@@ -1,5 +1,6 @@
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcryptjs');
+require('dotenv').config();
 const express = require('express');
 const uuid = require('uuid');
 const app = express();
@@ -9,6 +10,9 @@ const authCookieName = 'token';
 // The scores and users are saved in memory and disappear whenever the service is restarted.
 let users = [];
 let scores = [];
+let weatherCache = null;
+const weatherApiKey = process.env.OPENWEATHER_API_KEY;
+const weatherRefreshInterval = 60 * 60 * 1000;
 
 // The service port. In production the front-end code is statically hosted by the service on the same port.
 const port = process.argv.length > 2 ? process.argv[2] : 4000;
@@ -95,6 +99,15 @@ apiRouter.post('/score', verifyDevAuth, (req, res) => {
   res.send(scores);
 });
 
+apiRouter.get('/weather', (_req, res) => {
+  if (!weatherCache) {
+    res.status(503).send({ msg: 'Weather data is not available yet.' });
+    return;
+  }
+
+  res.send(weatherCache);
+});
+
 // Default error handler
 app.use(function (err, req, res, next) {
   res.status(500).send({ type: err.name, message: err.message });
@@ -158,4 +171,38 @@ function setAuthCookie(res, authToken) {
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
+  if (!weatherApiKey) {
+    console.error('OPENWEATHER_API_KEY is not set; weather updates are disabled.');
+    return;
+  }
+
+  refreshWeather();
+  setInterval(refreshWeather, weatherRefreshInterval);
 });
+
+async function refreshWeather() {
+  const url = new URL('https://api.openweathermap.org/data/2.5/weather');
+  url.searchParams.set('q', 'Provo,US');
+  url.searchParams.set('units', 'imperial');
+  url.searchParams.set('appid', weatherApiKey);
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`OpenWeather returned HTTP ${response.status}`);
+    }
+
+    const weather = await response.json();
+    weatherCache = {
+      location: `${weather.name}, ${weather.sys.country}`,
+      description: weather.weather[0].description,
+      temperature: weather.main.temp,
+      feelsLike: weather.main.feels_like,
+      humidity: weather.main.humidity,
+      windSpeed: weather.wind.speed,
+      fetchedAt: new Date().toISOString(),
+    };
+  } catch (error) {
+    console.error('Unable to refresh Provo weather:', error);
+  }
+}

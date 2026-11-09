@@ -11,7 +11,6 @@ import {
   createSamplePartyMembers,
   drawBattleScene,
   drawWaitingScreen,
-  getRandomWeather,
   testDelayedPlayerHelpMessage,
 } from './gameComponent';
 
@@ -23,7 +22,8 @@ export function Game({
 }) {
   const canvasRef = useRef(null);
   const [playerHelpMessage, setPlayerHelpMessage] = useState('');
-  const [weather] = useState(getRandomWeather);
+  const [weather, setWeather] = useState(null);
+  const [weatherError, setWeatherError] = useState('');
   const [battleStarted, setBattleStarted] = useState(false);
   const [battle, setBattle] = useState(null);
   const [currentTurn, setCurrentTurn] = useState(null);
@@ -125,6 +125,35 @@ export function Game({
       isMounted = false;
     };
   }, [playerCharacter]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadWeather() {
+      try {
+        const response = await fetch('/api/weather');
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.msg || 'Weather is currently unavailable.');
+        }
+        if (isMounted) {
+          setWeather(data);
+          setWeatherError('');
+        }
+      } catch (error) {
+        if (isMounted) {
+          setWeatherError(error instanceof Error ? error.message : 'Weather is currently unavailable.');
+        }
+      }
+    }
+
+    loadWeather();
+    const interval = window.setInterval(loadWeather, 60 * 60 * 1000);
+    return () => {
+      isMounted = false;
+      window.clearInterval(interval);
+    };
+  }, []);
 
   function createCharacter(event) {
     event.preventDefault();
@@ -605,12 +634,21 @@ export function Game({
 
         <Col xs={12}>
           <Card as="section" className="content-section">
-            <h2>Today's Weather: {weather.weather}</h2>
-            <p>Weather effects on today's battles:</p>
-            <ul>
-              {weather.effects.map((effect) => <li key={effect}>{effect}</li>)}
-              <li>These values are just placeholders and will be replaced by live data from OpenWeather API</li>
-            </ul>
+            <h2>Namarran Wastes Weather{weather ? `: ${weather.description}` : ''}</h2>
+            {weather ? (
+              <>
+                <p>
+                  {weather.temperature}°F, feels like {weather.feelsLike}°F,
+                  humidity {weather.humidity}%, wind {weather.windSpeed} mph.
+                </p>
+                <p className="mb-0">
+                  Updated {new Date(weather.fetchedAt).toLocaleTimeString()}.
+                </p>
+              </>
+            ) : (
+              <p>{weatherError || 'Loading weather...'}</p>
+            )}
+            {weatherError && weather && <p role="status">{weatherError} Showing the last available update.</p>}
           </Card>
         </Col>
 
