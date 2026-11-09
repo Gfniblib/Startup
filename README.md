@@ -129,7 +129,7 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 - [x] **Backend service endpoints** - I followed the example of simon service which I hope is okay. The professor even said we would have something very similar so I literally did use the same stuff.
 - [x] **Frontend calls service endpoints** - The frontend makes use of the backend endpoints to hide sensitive info.
 - [x] **Supports registration, login, logout, and restricted endpoint** - I hid the scores page and have login logout and registration working.
-- [ ] **Uses BCrypt to hash passwords** - I use bcrypt to hash the passwords.
+- [x] **Uses BCrypt to hash passwords** - I use bcrypt to hash the passwords.
 
 ## 🚀 DB deliverable
 

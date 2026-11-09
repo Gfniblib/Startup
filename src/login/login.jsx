@@ -50,7 +50,7 @@ export function Login({ onAccountCreated }) {
       <Col xs={12}>
         <Card className="login-panel p-4">
           <h2>Login</h2>
-          <p>Create a new account or log in with an account saved in this browser.</p>
+          <p>Create an account or log in to load your saved character.</p>
           <fieldset>
             <legend className="h5">Account Information</legend>
             <Form onSubmit={submitCredentials}>

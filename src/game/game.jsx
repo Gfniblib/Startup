@@ -19,6 +19,7 @@ export function Game({
   onCharacterUpdated,
   onCharacterDefeated,
   onScoreError,
+  isAuthenticated,
 }) {
   const canvasRef = useRef(null);
   const [playerHelpMessage, setPlayerHelpMessage] = useState('');
@@ -208,14 +209,16 @@ export function Game({
     setBattleStarted(true);
   }
 
-  function resolveBattleOutcome() {
+  async function resolveBattleOutcome() {
     const livingPlayers = battle.playerCharacters.filter((character) => character.currentHp > 0);
     const livingEnemies = battle.enemies.filter((enemy) => enemy.currentHp > 0);
 
     if (livingPlayers.length === 0) {
-      submitScore(playerCharacter);
+      if (isAuthenticated) {
+        await submitScore(playerCharacter);
+      }
       battle.currentTurn = null;
-      if (onCharacterDefeated(playerCharacter)) {
+      if (await onCharacterDefeated(playerCharacter)) {
         setBattleStarted(false);
         setBattle(null);
         setBattleEnded(false);
@@ -301,7 +304,7 @@ export function Game({
     }
   }
 
-  function finishTurn() {
+  async function finishTurn() {
     battle.finishTurn();
     setSelectingEnemy(false);
     setSelectingAlly(false);
@@ -309,7 +312,7 @@ export function Game({
     setSelectedSkill(null);
     setInitiativeRefresh((revision) => revision + 1);
 
-    if (resolveBattleOutcome()) {
+    if (await resolveBattleOutcome()) {
       return;
     }
 
@@ -370,8 +373,8 @@ export function Game({
     finishTurn();
   }
 
-  function retryCharacterDeletion() {
-    if (onCharacterDefeated(playerCharacter)) {
+  async function retryCharacterDeletion() {
+    if (await onCharacterDefeated(playerCharacter)) {
       setBattleStarted(false);
       setBattle(null);
       setBattleEnded(false);

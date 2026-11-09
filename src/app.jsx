@@ -4,11 +4,6 @@ import './app.css';
 import { BrowserRouter, Navigate, NavLink, Route, Routes, useNavigate } from 'react-router-dom';
 import { Card, Col, Container, Nav, Row } from 'react-bootstrap';
 import { Login } from './login/login';
-import {
-  deleteCharacterForAccount,
-  ensureAccountProfile,
-  saveCharacterForAccount,
-} from './login/accountStorage';
 import { Game } from './game/game';
 import { Leaderboard } from './leaderboard/leaderboard';
 import { Character } from './game/gameComponent';
@@ -19,23 +14,27 @@ export default function App() {
   const [characterSaveError, setCharacterSaveError] = useState('');
   const [scoreError, setScoreError] = useState('');
 
-  function handleAccountAuthenticated(username) {
-    let account;
-    try {
-      account = ensureAccountProfile(username);
-    } catch (error) {
-      setCharacterSaveError(
-        error instanceof Error ? error.message : 'Unable to load this account profile.'
-      );
-      return;
-    }
-
+  async function handleAccountAuthenticated(username) {
     setAccountName(username);
-    setPlayerCharacter(account.character ? restoreCharacter(account.character) : null);
+    setPlayerCharacter(null);
     setCharacterSaveError('');
+
+    try {
+      const response = await fetch('/api/character', { credentials: 'same-origin' });
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.msg || 'Unable to load this character.');
+      }
+
+      setPlayerCharacter(result.character ? restoreCharacter(result.character) : null);
+    } catch (error) {
+      setCharacterSaveError(
+        error instanceof Error ? error.message : 'Unable to load this character.'
+      );
+    }
   }
 
-  function handleCharacterCreated(character) {
+  async function handleCharacterCreated(character) {
     setPlayerCharacter(character);
     setCharacterSaveError('');
 
@@ -44,7 +43,16 @@ export default function App() {
     }
 
     try {
-      saveCharacterForAccount(accountName, character);
+      const response = await fetch('/api/character', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ character }),
+      });
+      const result = response.status === 204 ? {} : await response.json();
+      if (!response.ok) {
+        throw new Error(result.msg || 'Unable to save this character.');
+      }
     } catch (error) {
       setCharacterSaveError(
         error instanceof Error ? error.message : 'Unable to save this character to the account.'
@@ -52,7 +60,7 @@ export default function App() {
     }
   }
 
-  function handleCharacterUpdated(character) {
+  async function handleCharacterUpdated(character) {
     setPlayerCharacter(character);
     setCharacterSaveError('');
 
@@ -61,7 +69,16 @@ export default function App() {
     }
 
     try {
-      saveCharacterForAccount(accountName, character);
+      const response = await fetch('/api/character', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ character }),
+      });
+      const result = response.status === 204 ? {} : await response.json();
+      if (!response.ok) {
+        throw new Error(result.msg || 'Unable to save this character.');
+      }
     } catch (error) {
       setCharacterSaveError(
         error instanceof Error ? error.message : 'Unable to save this character to the account.'
@@ -69,10 +86,17 @@ export default function App() {
     }
   }
 
-  function handleCharacterDefeated() {
+  async function handleCharacterDefeated() {
     if (accountName) {
       try {
-        deleteCharacterForAccount(accountName);
+        const response = await fetch('/api/character', {
+          method: 'DELETE',
+          credentials: 'same-origin',
+        });
+        if (!response.ok) {
+          const result = await response.json();
+          throw new Error(result.msg || 'Unable to delete this character.');
+        }
       } catch (error) {
         setCharacterSaveError(
           error instanceof Error ? error.message : 'Unable to delete this character from the account.'
@@ -109,7 +133,9 @@ export default function App() {
       }
 
       setScoreError('');
-      handleCharacterDefeated();
+      if (!await handleCharacterDefeated()) {
+      setScoreError('The score was saved, but the character could not be deleted. Try again.');
+      }
     } catch (error) {
       setScoreError(error instanceof Error ? error.message : 'Unable to save this character score.');
     }
@@ -169,6 +195,7 @@ export default function App() {
                                         onCharacterUpdated={handleCharacterUpdated}
                                         onCharacterDefeated={handleCharacterDefeated}
                                         onScoreError={setScoreError}
+                                        isAuthenticated={Boolean(accountName)}
                                     />
                                 )}
                             />

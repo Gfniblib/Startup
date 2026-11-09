@@ -9,6 +9,7 @@ const authCookieName = 'token';
 
 // The scores and users are saved in memory and disappear whenever the service is restarted.
 let users = [];
+const characters = new Map();
 let scores = [
   { hero: 'Aria Dawn', heroClass: 'Rogue Archivist', score: 14800 },
   { hero: 'Kael Frost', heroClass: 'Frostblade', score: 13250 },
@@ -74,11 +75,40 @@ apiRouter.delete('/auth/logout', async (req, res) => {
 const verifyAuth = async (req, res, next) => {
   const user = await findUser('token', req.cookies[authCookieName]);
   if (user) {
+    req.user = user;
     next();
   } else {
     res.status(401).send({ msg: 'Unauthorized' });
   }
 };
+
+apiRouter.get('/character', verifyAuth, (req, res) => {
+  const emailKey = req.user.email.toLowerCase();
+  res.send({ character: characters.get(emailKey) ?? null });
+});
+
+apiRouter.put('/character', verifyAuth, (req, res) => {
+  const { character } = req.body;
+  if (
+    !character
+    || typeof character !== 'object'
+    || Array.isArray(character)
+    || typeof character.name !== 'string'
+    || typeof character.heroClass !== 'string'
+    || typeof character.race !== 'string'
+  ) {
+    res.status(400).send({ msg: 'A character with a name, class, and race is required.' });
+    return;
+  }
+
+  characters.set(req.user.email.toLowerCase(), character);
+  res.status(204).end();
+});
+
+apiRouter.delete('/character', verifyAuth, (req, res) => {
+  characters.delete(req.user.email.toLowerCase());
+  res.status(204).end();
+});
 
 // GetScores
 apiRouter.get('/scores', verifyAuth, (_req, res) => {
