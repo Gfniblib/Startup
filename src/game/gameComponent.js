@@ -104,8 +104,9 @@ export function createSamplePartyMembers() {
 }
 
 export class Enemy {
-  constructor(name, enemyType) {
-    this.name = name;
+  constructor(displayName, enemyType) {
+    this.name = displayName;
+    this.displayName = displayName;
     this.enemyType = enemyType;
 
     this.str = 1;
@@ -127,8 +128,8 @@ export class Enemy {
 }
 
 export class Goblin extends Enemy {
-  constructor(name) {
-    super(name, 'goblin');
+  constructor(displayName) {
+    super(displayName, 'goblin');
   }
 
   // Override default stats for Goblin
@@ -145,8 +146,8 @@ export class Goblin extends Enemy {
 }
 
 export class Skeleton extends Enemy {
-  constructor(name) {
-    super(name, 'skeleton');
+  constructor(displayName) {
+    super(displayName, 'skeleton');
   }
 
   // Override default stats for Skeleton
@@ -163,8 +164,8 @@ export class Skeleton extends Enemy {
 }
 
 export class Slime extends Enemy {
-  constructor(name) {
-    super(name, 'slime');
+  constructor(displayName) {
+    super(displayName, 'slime');
   }
 
   // Override default stats for Slime

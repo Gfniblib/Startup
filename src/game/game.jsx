@@ -181,12 +181,21 @@ export function Game({
     }
 
     // TODO base enemies off of player strength and location
-    const enemyTypes = [Goblin, Skeleton, Slime];
+    const enemyTypes = [
+      { EnemyType: Goblin, displayName: 'goblin' },
+      { EnemyType: Skeleton, displayName: 'skeleton' },
+      { EnemyType: Slime, displayName: 'slime' },
+    ];
+    const enemyCounts = new Map();
     const battle = new Battle({
       playerCharacters: [playerCharacter, ...createSamplePartyMembers()],
-      enemies: Array.from({ length: 4 }, (_, index) => {
-        const EnemyType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
-        return new EnemyType(`${EnemyType.name} ${index + 1}`);
+      enemies: Array.from({ length: 4 }, () => {
+        const { EnemyType, displayName } = enemyTypes[
+          Math.floor(Math.random() * enemyTypes.length)
+        ];
+        const count = (enemyCounts.get(displayName) ?? 0) + 1;
+        enemyCounts.set(displayName, count);
+        return new EnemyType(`${displayName} ${count}`);
       }),
     });
 
