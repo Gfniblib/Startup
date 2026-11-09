@@ -13,6 +13,11 @@ if [[ -z "$key" || -z "$hostname" || -z "$service" ]]; then
     exit 1
 fi
 
+if [[ ! -f service/.env ]]; then
+    printf "\nMissing service/.env. Add OPENWEATHER_API_KEY before deploying.\n"
+    exit 1
+fi
+
 printf "\n----> Deploying React bundle $service to $hostname with $key\n"
 
 # Step 1
@@ -35,12 +40,14 @@ ENDSSH
 # Step 3
 printf "\n----> Copy the distribution package to the target\n"
 scp -r -i "$key" build/* ubuntu@$hostname:services/$service
+scp -i "$key" service/.env ubuntu@$hostname:services/$service/.env
 
 # Step 4
 printf "\n----> Deploy the service on the target\n"
 ssh -i "$key" ubuntu@$hostname << ENDSSH
 bash -i
 cd services/${service}
+chmod 600 .env
 npm install
 pm2 restart ${service}
 ENDSSH

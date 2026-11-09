@@ -122,14 +122,14 @@ For this deliverable I did the following. I checked the box `[x]` and added a de
 
 For this deliverable I did the following. I checked the box `[x]` and added a description for things I completed.
 
-- [ ] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
-- [ ] **Node.js/Express HTTP service** - I did not complete this part of the deliverable.
-- [ ] **Static middleware for frontend** - I did not complete this part of the deliverable.
-- [ ] **Calls to third party endpoints** - I did not complete this part of the deliverable.
-- [ ] **Backend service endpoints** - I did not complete this part of the deliverable.
-- [ ] **Frontend calls service endpoints** - I did not complete this part of the deliverable.
-- [ ] **Supports registration, login, logout, and restricted endpoint** - I did not complete this part of the deliverable.
-- [ ] **Uses BCrypt to hash passwords** - I did not complete this part of the deliverable.
+- [x] I completed the prerequisites for this deliverable (Simon deployed, GitHub link, Git commits)
+- [x] **Node.js/Express HTTP service** - I followed the example of simon service to implement node and express
+- [x] **Static middleware for frontend** - I made use of static middleware
+- [x] **Calls to third party endpoints** - I specifically made use of openweather's api
+- [x] **Backend service endpoints** - I followed the example of simon service which I hope is okay. The professor even said we would have something very similar so I literally did use the same stuff.
+- [x] **Frontend calls service endpoints** - The frontend makes use of the backend endpoints to hide sensitive info.
+- [x] **Supports registration, login, logout, and restricted endpoint** - I hid the scores page and have login logout and registration working.
+- [ ] **Uses BCrypt to hash passwords** - I use bcrypt to hash the passwords.
 
 ## 🚀 DB deliverable
 
