@@ -18,6 +18,25 @@ export function saveAccounts(accounts) {
   window.localStorage.setItem(ACCOUNTS_STORAGE_KEY, JSON.stringify(accounts));
 }
 
+export function ensureAccountProfile(username) {
+  const usernameKey = username.trim().toLowerCase();
+  const accounts = readAccounts();
+
+  for (const account of accounts) {
+    delete account.passwordHash;
+    delete account.passwordSalt;
+  }
+
+  let account = accounts.find((entry) => entry.usernameKey === usernameKey);
+  if (!account) {
+    account = { username, usernameKey, characterId: null };
+    accounts.push(account);
+  }
+
+  saveAccounts(accounts);
+  return account;
+}
+
 export function saveCharacterForAccount(username, character) {
   const usernameKey = username.trim().toLowerCase();
   const accounts = readAccounts();

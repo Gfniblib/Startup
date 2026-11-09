@@ -1,71 +1,45 @@
 import React, { useState } from 'react';
 import './login.css';
 import { Button, Card, Col, Form, Row } from 'react-bootstrap';
-import { readAccounts, saveAccounts } from './accountStorage';
 
 export function Login({ onAccountCreated }) {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function submitCredentials(event) {
     event.preventDefault();
-    const playerName = username.trim();
-    if (!playerName) {
-      setMessage('Enter a player name.');
-      return;
-    }
-
     const action = event.nativeEvent.submitter?.value;
-    const usernameKey = playerName.toLowerCase();
+    const normalizedEmail = email.trim();
     setIsSubmitting(true);
 
     try {
-      const accounts = readAccounts();
-      const accountIndex = accounts.findIndex((account) => account.usernameKey === usernameKey);
-      let authenticatedAccount;
+      const response = await fetch(`/api/auth/${action === 'create' ? 'create' : 'login'}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ email: normalizedEmail, password }),
+      });
+      const result = await response.json();
 
-      if (action === 'create') {
-        if (accountIndex !== -1) {
-          setMessage('An account with that player name already exists. Log in instead.');
-          return;
+      if (!response.ok) {
+        if (response.status === 409) {
+          throw new Error('An account with that email already exists. Log in instead.');
         }
-
-        const passwordSalt = createSalt();
-        const passwordHash = await hashPassword(password, passwordSalt);
-        accounts.push({
-          username: playerName,
-          usernameKey,
-          passwordSalt,
-          passwordHash,
-          characterId: null,
-        });
-        saveAccounts(accounts);
-        authenticatedAccount = accounts[accounts.length - 1];
-        setMessage(`Account created and logged in as ${playerName}.`);
-      } else {
-        if (accountIndex === -1) {
-          setMessage('No account was found for that player name.');
-          return;
+        if (response.status === 401) {
+          throw new Error('The email or password is incorrect.');
         }
-
-        const account = accounts[accountIndex];
-        const passwordHash = await hashPassword(password, account.passwordSalt);
-        if (passwordHash !== account.passwordHash) {
-          setMessage('The player name or password is incorrect.');
-          return;
-        }
-
-        authenticatedAccount = account;
-        setMessage(`Logged in as ${account.username}.`);
+        throw new Error(result.msg || 'Unable to authenticate. Please try again.');
       }
 
-      window.localStorage.setItem('lorebound.currentUsername', usernameKey);
-      onAccountCreated(authenticatedAccount.username, authenticatedAccount.character ?? null);
+      onAccountCreated(result.email, null);
+      setMessage(action === 'create'
+        ? `Account created and logged in as ${result.email}.`
+        : `Logged in as ${result.email}.`);
       setPassword('');
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Unable to save or verify this account.');
+      setMessage(error instanceof Error ? error.message : 'Unable to authenticate. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -80,15 +54,15 @@ export function Login({ onAccountCreated }) {
           <fieldset>
             <legend className="h5">Account Information</legend>
             <Form onSubmit={submitCredentials}>
-              <Form.Group className="mb-3" controlId="username">
-                <Form.Label>Player name</Form.Label>
+              <Form.Group className="mb-3" controlId="email">
+                <Form.Label>Email</Form.Label>
                 <Form.Control
-                  type="text"
-                  name="username"
-                  placeholder="Username"
-                  value={username}
-                  onChange={(event) => setUsername(event.target.value)}
-                  autoComplete="username"
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  autoComplete="email"
                   required
                 />
               </Form.Group>
@@ -130,42 +104,4 @@ export function Login({ onAccountCreated }) {
       </Col>
     </Row>
   );
-}
-
-function createSalt() {
-  const salt = window.crypto.getRandomValues(new Uint8Array(16));
-  return bytesToBase64(salt);
-}
-
-async function hashPassword(password, salt) {
-  if (!window.crypto?.subtle) {
-    throw new Error('Secure password hashing is unavailable in this browser context.');
-  }
-
-  const key = await window.crypto.subtle.importKey(
-    'raw',
-    new TextEncoder().encode(password),
-    'PBKDF2',
-    false,
-    ['deriveBits']
-  );
-  const hash = await window.crypto.subtle.deriveBits(
-    {
-      name: 'PBKDF2',
-      salt: base64ToBytes(salt),
-      iterations: 310000,
-      hash: 'SHA-256',
-    },
-    key,
-    256
-  );
-  return bytesToBase64(new Uint8Array(hash));
-}
-
-function bytesToBase64(bytes) {
-  return window.btoa(String.fromCharCode(...bytes));
-}
-
-function base64ToBytes(value) {
-  return Uint8Array.from(window.atob(value), (character) => character.charCodeAt(0));
 }
