@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.css';
-import { BrowserRouter, Navigate, NavLink, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, NavLink, Route, Routes, useNavigate } from 'react-router-dom';
 import { Card, Col, Container, Nav, Row } from 'react-bootstrap';
 import { Login } from './login/login';
 import {
@@ -85,6 +85,12 @@ export default function App() {
     return true;
   }
 
+  function handleLoggedOut() {
+    setAccountName('');
+    setPlayerCharacter(null);
+    setCharacterSaveError('');
+  }
+
   return (
     <BrowserRouter>
         <div className="body d-flex flex-column min-vh-100">
@@ -145,6 +151,12 @@ export default function App() {
                         <Card className="account-panel">
                             <h3 className="h5">Logged in as:</h3>
                             <p className="mb-0">{accountName || 'Guest'}</p>
+                            {accountName && (
+                                <LogoutButton
+                                    onLogout={handleLoggedOut}
+                                    onError={setCharacterSaveError}
+                                />
+                            )}
                             {playerCharacter && (
                                 <section className="mt-3 pt-3 border-top" aria-label="Character">
                                     <h3 className="h5">{playerCharacter.name}</h3>
@@ -176,6 +188,44 @@ export default function App() {
             </footer>
         </div>
     </BrowserRouter>
+  );
+}
+
+function LogoutButton({ onLogout, onError }) {
+  const navigate = useNavigate();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  async function logout() {
+    setIsLoggingOut(true);
+    onError('');
+
+    try {
+      const response = await fetch('/api/auth/logout', {
+        method: 'DELETE',
+        credentials: 'same-origin',
+      });
+      if (!response.ok) {
+        throw new Error('Unable to log out. Please try again.');
+      }
+
+      onLogout();
+      navigate('/', { replace: true });
+    } catch (error) {
+      onError(error instanceof Error ? error.message : 'Unable to log out. Please try again.');
+    } finally {
+      setIsLoggingOut(false);
+    }
+  }
+
+  return (
+    <button
+      className="btn btn-outline-secondary mt-3"
+      type="button"
+      onClick={logout}
+      disabled={isLoggingOut}
+    >
+      {isLoggingOut ? 'Logging out...' : 'Log out'}
+    </button>
   );
 }
 
