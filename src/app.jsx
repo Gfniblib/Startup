@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.css';
-import { BrowserRouter, NavLink, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, NavLink, Route, Routes } from 'react-router-dom';
 import { Card, Col, Container, Nav, Row } from 'react-bootstrap';
 import { Login } from './login/login';
 import {
   deleteCharacterForAccount,
+  ensureAccountProfile,
   saveCharacterForAccount,
 } from './login/accountStorage';
 import { Game } from './game/game';
@@ -17,9 +18,19 @@ export default function App() {
   const [playerCharacter, setPlayerCharacter] = useState(null);
   const [characterSaveError, setCharacterSaveError] = useState('');
 
-  function handleAccountAuthenticated(username, savedCharacter) {
+  function handleAccountAuthenticated(username) {
+    let account;
+    try {
+      account = ensureAccountProfile(username);
+    } catch (error) {
+      setCharacterSaveError(
+        error instanceof Error ? error.message : 'Unable to load this account profile.'
+      );
+      return;
+    }
+
     setAccountName(username);
-    setPlayerCharacter(savedCharacter ? restoreCharacter(savedCharacter) : null);
+    setPlayerCharacter(account.character ? restoreCharacter(account.character) : null);
     setCharacterSaveError('');
   }
 
@@ -91,7 +102,9 @@ export default function App() {
                                 <Nav as="nav" aria-label="Main navigation" className="d-flex flex-nowrap gap-2">
                                     <Nav.Link as={NavLink} to="/">Login</Nav.Link>
                                     <Nav.Link as={NavLink} to="/game">Game</Nav.Link>
-                                    <Nav.Link as={NavLink} to="/leaderboard">High Scores</Nav.Link>
+                                    {accountName && (
+                                      <Nav.Link as={NavLink} to="/leaderboard">High Scores</Nav.Link>
+                                    )}
                                 </Nav>
                             </div>
                         </Col>
@@ -121,7 +134,10 @@ export default function App() {
                                     />
                                 )}
                             />
-                            <Route path="/leaderboard" element={<Leaderboard />} />
+                            <Route
+                                path="/leaderboard"
+                                element={accountName ? <Leaderboard /> : <Navigate to="/" replace />}
+                            />
                             <Route path="*" element={<NotFound />} />
                         </Routes>
                     </Col>
