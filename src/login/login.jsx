@@ -33,7 +33,7 @@ export function Login({ onAccountCreated }) {
         throw new Error(result.msg || 'Unable to authenticate. Please try again.');
       }
 
-      onAccountCreated(result.email, null);
+      await onAccountCreated(result.email);
       setMessage(action === 'create'
         ? `Account created and logged in as ${result.email}.`
         : `Logged in as ${result.email}.`);

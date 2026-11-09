@@ -181,6 +181,8 @@ export function Game({
       return;
     }
 
+    playerCharacter.initiative = 0;
+
     // TODO base enemies off of player strength and location
     const enemyTypes = [
       { EnemyType: Goblin, displayName: 'goblin' },

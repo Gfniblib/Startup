@@ -112,7 +112,7 @@ export default function App() {
 
   async function handleManualCharacterDeletion() {
     if (!playerCharacter || !accountName) {
-      handleCharacterDefeated();
+      await handleCharacterDefeated();
       return;
     }
 
@@ -134,7 +134,7 @@ export default function App() {
 
       setScoreError('');
       if (!await handleCharacterDefeated()) {
-      setScoreError('The score was saved, but the character could not be deleted. Try again.');
+        setScoreError('The score was saved, but the character could not be deleted. Try again.');
       }
     } catch (error) {
       setScoreError(error instanceof Error ? error.message : 'Unable to save this character score.');
