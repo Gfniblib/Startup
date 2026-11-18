@@ -14,6 +14,8 @@ const scoreCollection = db.collection('score');
     await db.command({ ping: 1 });
     await userCollection.createIndex({ email: 1 }, { unique: true });
     await characterCollection.createIndex({ userId: 1 });
+    await scoreCollection.createIndex({ score: -1 });
+    await scoreCollection.createIndex({ userId: 1, createdAt: -1 });
     console.log(`Connect to database`);
   } catch (ex) {
     console.log(`Unable to connect to database with ${url} because ${ex.message}`);
@@ -93,11 +95,31 @@ async function deleteCharacter(characterId, userId) {
 }
 
 async function addScore(score) {
-  return scoreCollection.insertOne(score);
+  const character = score.character && typeof score.character === 'object'
+    ? { ...score.character }
+    : null;
+
+  const scoreDocument = {
+    hero: score.hero.trim(),
+    heroClass: score.heroClass.trim(),
+    score: score.score,
+    character,
+    status: score.status || 'archived',
+    createdAt: new Date(),
+  };
+
+  if (score.userId) {
+    scoreDocument.userId = new ObjectId(score.userId);
+  }
+  if (score.characterId) {
+    scoreDocument.characterId = new ObjectId(score.characterId);
+  }
+
+  return scoreCollection.insertOne(scoreDocument);
 }
 
 function getHighScores() {
-  const query = { score: { $gt: 0, $lt: 900 } };
+  const query = { score: { $gte: 0 } };
   const options = {
     sort: { score: -1 },
     limit: 10,

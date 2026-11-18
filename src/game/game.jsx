@@ -294,6 +294,8 @@ export function Game({
           hero: character.name,
           heroClass: character.heroClass,
           score: character.xp ?? 0,
+          character,
+          status: 'dead',
         }),
       });
       const result = await response.json();

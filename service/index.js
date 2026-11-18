@@ -14,16 +14,12 @@ const {
   getCharacter,
   updateCharacter,
   deleteCharacter,
+  addScore,
+  getHighScores,
 } = require('./database');
 
 const authCookieName = 'token';
 
-// Scores are currently saved in memory until a MongoDB score implementation is added.
-let scores = [
-  { hero: 'Aria Dawn', heroClass: 'Rogue Archivist', score: 14800 },
-  { hero: 'Kael Frost', heroClass: 'Frostblade', score: 13250 },
-  { hero: 'Nyra Bloom', heroClass: 'Wild Sage', score: 12600 },
-];
 let weatherCache = null;
 const weatherApiKey = process.env.OPENWEATHER_API_KEY;
 const weatherRefreshInterval = 60 * 60 * 1000;
@@ -130,13 +126,13 @@ apiRouter.delete('/character', verifyAuth, async (req, res) => {
 });
 
 // GetScores
-apiRouter.get('/scores', verifyAuth, (_req, res) => {
-  res.send(scores);
+apiRouter.get('/scores', verifyAuth, async (_req, res) => {
+  res.send(await getHighScores());
 });
 
 // SubmitScore
-apiRouter.post('/score', verifyAuth, (req, res) => {
-  const { hero, heroClass, score } = req.body;
+apiRouter.post('/score', verifyAuth, async (req, res) => {
+  const { hero, heroClass, score, character, status } = req.body;
   if (
     typeof hero !== 'string'
     || !hero.trim()
@@ -144,13 +140,22 @@ apiRouter.post('/score', verifyAuth, (req, res) => {
     || !heroClass.trim()
     || !Number.isFinite(score)
     || score < 0
+    || (character !== undefined && (typeof character !== 'object' || character === null || Array.isArray(character)))
   ) {
-    res.status(400).send({ msg: 'A hero, class, and non-negative numeric score are required.' });
+    res.status(400).send({ msg: 'A hero, class, character, and non-negative numeric score are required.' });
     return;
   }
 
-  scores = updateScores({ hero: hero.trim(), heroClass: heroClass.trim(), score });
-  res.send(scores);
+  await addScore({
+    hero,
+    heroClass,
+    score,
+    character,
+    status,
+    userId: req.user._id,
+    characterId: req.user.characterIds?.[0],
+  });
+  res.send(await getHighScores());
 });
 
 apiRouter.get('/weather', (_req, res) => {
@@ -172,27 +177,6 @@ app.use((_req, res) => {
   res.sendFile('index.html', { root: 'public' });
 });
 
-// updateScores considers a new score for inclusion in the high scores.
-function updateScores(newScore) {
-  let found = false;
-  for (const [i, prevScore] of scores.entries()) {
-    if (newScore.score > prevScore.score) {
-      scores.splice(i, 0, newScore);
-      found = true;
-      break;
-    }
-  }
-
-  if (!found) {
-    scores.push(newScore);
-  }
-
-  if (scores.length > 10) {
-    scores.length = 10;
-  }
-
-  return scores;
-}
 
 async function createUser(email, password) {
   const passwordHash = await bcrypt.hash(password, 10);

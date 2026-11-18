@@ -125,6 +125,8 @@ export default function App() {
           hero: playerCharacter.name,
           heroClass: playerCharacter.heroClass,
           score: playerCharacter.xp ?? 0,
+          character: playerCharacter,
+          status: 'deleted',
         }),
       });
       const result = await response.json();
