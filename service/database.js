@@ -1,16 +1,19 @@
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 const config = require('./dbConfig.json');
 
 const url = `mongodb+srv://${config.userName}:${config.password}@${config.hostname}`;
 const client = new MongoClient(url);
 const db = client.db('lorebound');
 const userCollection = db.collection('user');
+const characterCollection = db.collection('character');
 const scoreCollection = db.collection('score');
 
 // This will asynchronously test the connection and exit the process if it fails
 (async function testConnection() {
   try {
     await db.command({ ping: 1 });
+    await userCollection.createIndex({ email: 1 }, { unique: true });
+    await characterCollection.createIndex({ userId: 1 });
     console.log(`Connect to database`);
   } catch (ex) {
     console.log(`Unable to connect to database with ${url} because ${ex.message}`);
@@ -22,17 +25,71 @@ function getUser(email) {
   return userCollection.findOne({ email: email });
 }
 
-// Not sure if Im going to make use of this.
 function getUserByToken(token) {
-  return userCollection.findOne({ token: token });
+  if (!token) return null;
+  return userCollection.findOne({ token });
 }
 
 async function addUser(user) {
-  await userCollection.insertOne(user);
+  const userDocument = {
+    email: user.email.toLowerCase(),
+    password: user.password,
+    token: user.token,
+    characterIds: [],
+  };
+  await userCollection.insertOne(userDocument);
+  return userDocument;
 }
 
 async function updateUser(user) {
-  await userCollection.updateOne({ email: user.email }, { $set: user });
+  const { _id, email, ...updates } = user;
+  const filter = _id ? { _id } : { email: email.toLowerCase() };
+  await userCollection.updateOne(filter, { $set: updates });
+  return user;
+}
+
+async function updateUserRemoveAuth(user) {
+  await userCollection.updateOne(
+    { _id: user._id },
+    { $unset: { token: 1 } }
+  );
+}
+
+async function addCharacter(userId, character) {
+  const characterDocument = {
+    ...character,
+    userId: new ObjectId(userId),
+  };
+  const result = await characterCollection.insertOne(characterDocument);
+
+  await userCollection.updateOne(
+    { _id: new ObjectId(userId) },
+    { $push: { characterIds: result.insertedId } }
+  );
+
+  return characterDocument;
+}
+
+function getCharacter(characterId) {
+  if (!characterId) return null;
+  return characterCollection.findOne({ _id: new ObjectId(characterId) });
+}
+
+async function updateCharacter(characterId, character) {
+  await characterCollection.updateOne(
+    { _id: new ObjectId(characterId) },
+    { $set: character }
+  );
+  return characterCollection.findOne({ _id: new ObjectId(characterId) });
+}
+
+async function deleteCharacter(characterId, userId) {
+  const objectCharacterId = new ObjectId(characterId);
+  await characterCollection.deleteOne({ _id: objectCharacterId });
+  await userCollection.updateOne(
+    { _id: new ObjectId(userId) },
+    { $pull: { characterIds: objectCharacterId } }
+  );
 }
 
 async function addScore(score) {
@@ -54,6 +111,11 @@ module.exports = {
   getUserByToken,
   addUser,
   updateUser,
+  updateUserRemoveAuth,
+  addCharacter,
+  getCharacter,
+  updateCharacter,
+  deleteCharacter,
   addScore,
   getHighScores,
 };
