@@ -4,12 +4,21 @@ require('dotenv').config();
 const express = require('express');
 const uuid = require('uuid');
 const app = express();
+const {
+  getUser,
+  getUserByToken,
+  addUser,
+  updateUser,
+  updateUserRemoveAuth,
+  addCharacter,
+  getCharacter,
+  updateCharacter,
+  deleteCharacter,
+} = require('./database');
 
 const authCookieName = 'token';
 
-// The scores and users are saved in memory and disappear whenever the service is restarted.
-let users = [];
-const characters = new Map();
+// Scores are currently saved in memory until a MongoDB score implementation is added.
 let scores = [
   { hero: 'Aria Dawn', heroClass: 'Rogue Archivist', score: 14800 },
   { hero: 'Kael Frost', heroClass: 'Frostblade', score: 13250 },
@@ -53,6 +62,7 @@ apiRouter.post('/auth/login', async (req, res) => {
   if (user) {
     if (await bcrypt.compare(req.body.password, user.password)) {
       user.token = uuid.v4();
+      await updateUser(user);
       setAuthCookie(res, user.token);
       res.send({ email: user.email });
       return;
@@ -65,7 +75,7 @@ apiRouter.post('/auth/login', async (req, res) => {
 apiRouter.delete('/auth/logout', async (req, res) => {
   const user = await findUser('token', req.cookies[authCookieName]);
   if (user) {
-    delete user.token;
+    await updateUserRemoveAuth(user);
   }
   res.clearCookie(authCookieName);
   res.status(204).end();
@@ -82,12 +92,13 @@ const verifyAuth = async (req, res, next) => {
   }
 };
 
-apiRouter.get('/character', verifyAuth, (req, res) => {
-  const emailKey = req.user.email.toLowerCase();
-  res.send({ character: characters.get(emailKey) ?? null });
+apiRouter.get('/character', verifyAuth, async (req, res) => {
+  const characterId = req.user.characterIds?.[0];
+  const character = await getCharacter(characterId);
+  res.send({ character });
 });
 
-apiRouter.put('/character', verifyAuth, (req, res) => {
+apiRouter.put('/character', verifyAuth, async (req, res) => {
   const { character } = req.body;
   if (
     !character
@@ -101,12 +112,20 @@ apiRouter.put('/character', verifyAuth, (req, res) => {
     return;
   }
 
-  characters.set(req.user.email.toLowerCase(), character);
+  const characterId = req.user.characterIds?.[0];
+  if (characterId) {
+    await updateCharacter(characterId, character);
+  } else {
+    await addCharacter(req.user._id, character);
+  }
   res.status(204).end();
 });
 
-apiRouter.delete('/character', verifyAuth, (req, res) => {
-  characters.delete(req.user.email.toLowerCase());
+apiRouter.delete('/character', verifyAuth, async (req, res) => {
+  const characterId = req.user.characterIds?.[0];
+  if (characterId) {
+    await deleteCharacter(characterId, req.user._id);
+  }
   res.status(204).end();
 });
 
@@ -179,19 +198,24 @@ async function createUser(email, password) {
   const passwordHash = await bcrypt.hash(password, 10);
 
   const user = {
-    email: email,
+    email: email.toLowerCase(),
     password: passwordHash,
     token: uuid.v4(),
+    characterIds: [],
   };
-  users.push(user);
-
-  return user;
+  return addUser(user);
 }
 
 async function findUser(field, value) {
   if (!value) return null;
 
-  return users.find((u) => u[field] === value);
+  if (field === 'token') {
+    return getUserByToken(value);
+  }
+  if (field === 'email') {
+    return getUser(value);
+  }
+  return null;
 }
 
 // setAuthCookie in the HTTP response
