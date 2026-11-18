@@ -120,6 +120,26 @@ apiRouter.put('/character', verifyAuth, async (req, res) => {
 apiRouter.delete('/character', verifyAuth, async (req, res) => {
   const characterId = req.user.characterIds?.[0];
   if (characterId) {
+    const savedCharacter = await getCharacter(characterId);
+    const character = req.body?.character ?? savedCharacter;
+    if (
+      !character
+      || typeof character.name !== 'string'
+      || typeof character.heroClass !== 'string'
+    ) {
+      res.status(404).send({ msg: 'Unable to find a valid character to archive.' });
+      return;
+    }
+
+    await addScore({
+      hero: character.name,
+      heroClass: character.heroClass,
+      score: Number.isFinite(character.xp) ? character.xp : 0,
+      character,
+      status: req.body?.status === 'dead' ? 'dead' : 'deleted',
+      userId: req.user._id,
+      characterId,
+    });
     await deleteCharacter(characterId, req.user._id);
   }
   res.status(204).end();
@@ -127,34 +147,6 @@ apiRouter.delete('/character', verifyAuth, async (req, res) => {
 
 // GetScores
 apiRouter.get('/scores', verifyAuth, async (_req, res) => {
-  res.send(await getHighScores());
-});
-
-// SubmitScore
-apiRouter.post('/score', verifyAuth, async (req, res) => {
-  const { hero, heroClass, score, character, status } = req.body;
-  if (
-    typeof hero !== 'string'
-    || !hero.trim()
-    || typeof heroClass !== 'string'
-    || !heroClass.trim()
-    || !Number.isFinite(score)
-    || score < 0
-    || (character !== undefined && (typeof character !== 'object' || character === null || Array.isArray(character)))
-  ) {
-    res.status(400).send({ msg: 'A hero, class, character, and non-negative numeric score are required.' });
-    return;
-  }
-
-  await addScore({
-    hero,
-    heroClass,
-    score,
-    character,
-    status,
-    userId: req.user._id,
-    characterId: req.user.characterIds?.[0],
-  });
   res.send(await getHighScores());
 });
 

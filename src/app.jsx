@@ -12,7 +12,6 @@ export default function App() {
   const [accountName, setAccountName] = useState('');
   const [playerCharacter, setPlayerCharacter] = useState(null);
   const [characterSaveError, setCharacterSaveError] = useState('');
-  const [scoreError, setScoreError] = useState('');
 
   async function handleAccountAuthenticated(username) {
     setAccountName(username);
@@ -86,12 +85,14 @@ export default function App() {
     }
   }
 
-  async function handleCharacterDefeated() {
+  async function handleCharacterDefeated(character = playerCharacter, status = 'deleted') {
     if (accountName) {
       try {
         const response = await fetch('/api/character', {
           method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
           credentials: 'same-origin',
+          body: JSON.stringify({ character, status }),
         });
         if (!response.ok) {
           const result = await response.json();
@@ -116,38 +117,13 @@ export default function App() {
       return;
     }
 
-    try {
-      const response = await fetch('/api/score', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'same-origin',
-        body: JSON.stringify({
-          hero: playerCharacter.name,
-          heroClass: playerCharacter.heroClass,
-          score: playerCharacter.xp ?? 0,
-          character: playerCharacter,
-          status: 'deleted',
-        }),
-      });
-      const result = await response.json();
-      if (!response.ok) {
-        throw new Error(result.msg || 'Unable to save this character score.');
-      }
-
-      setScoreError('');
-      if (!await handleCharacterDefeated()) {
-        setScoreError('The score was saved, but the character could not be deleted. Try again.');
-      }
-    } catch (error) {
-      setScoreError(error instanceof Error ? error.message : 'Unable to save this character score.');
-    }
+    await handleCharacterDefeated(playerCharacter, 'deleted');
   }
 
   function handleLoggedOut() {
     setAccountName('');
     setPlayerCharacter(null);
     setCharacterSaveError('');
-    setScoreError('');
   }
 
   return (
@@ -196,8 +172,6 @@ export default function App() {
                                         onCharacterCreated={handleCharacterCreated}
                                         onCharacterUpdated={handleCharacterUpdated}
                                         onCharacterDefeated={handleCharacterDefeated}
-                                        onScoreError={setScoreError}
-                                        isAuthenticated={Boolean(accountName)}
                                     />
                                 )}
                             />
@@ -237,11 +211,6 @@ export default function App() {
                             {characterSaveError && (
                                 <p className="text-danger mt-3 mb-0" role="alert">
                                     {characterSaveError}
-                                </p>
-                            )}
-                            {scoreError && (
-                                <p className="text-danger mt-3 mb-0" role="alert">
-                                    {scoreError}
                                 </p>
                             )}
                         </Card>

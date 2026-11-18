@@ -87,9 +87,13 @@ async function updateCharacter(characterId, character) {
 
 async function deleteCharacter(characterId, userId) {
   const objectCharacterId = new ObjectId(characterId);
-  await characterCollection.deleteOne({ _id: objectCharacterId });
+  const objectUserId = new ObjectId(userId);
+  await characterCollection.deleteOne({
+    _id: objectCharacterId,
+    userId: objectUserId,
+  });
   await userCollection.updateOne(
-    { _id: new ObjectId(userId) },
+    { _id: objectUserId },
     { $pull: { characterIds: objectCharacterId } }
   );
 }
