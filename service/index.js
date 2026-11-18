@@ -120,7 +120,11 @@ apiRouter.put('/character', verifyAuth, async (req, res) => {
 
   const characterId = req.user.characterIds?.[0];
   if (characterId) {
-    await updateCharacter(characterId, character);
+    const updatedCharacter = await updateCharacter(characterId, character);
+    if (!updatedCharacter) {
+      res.status(404).send({ msg: 'Unable to find the saved character.' });
+      return;
+    }
   } else {
     await addCharacter(req.user._id, character);
   }

@@ -78,11 +78,18 @@ function getCharacter(characterId) {
 }
 
 async function updateCharacter(characterId, character) {
-  await characterCollection.updateOne(
-    { _id: new ObjectId(characterId) },
-    { $set: character }
+  const updates = { ...character };
+  delete updates._id;
+  delete updates.userId;
+  const objectCharacterId = new ObjectId(characterId);
+  const result = await characterCollection.updateOne(
+    { _id: objectCharacterId },
+    { $set: updates }
   );
-  return characterCollection.findOne({ _id: new ObjectId(characterId) });
+  if (result.matchedCount === 0) {
+    return null;
+  }
+  return characterCollection.findOne({ _id: objectCharacterId });
 }
 
 async function deleteCharacter(characterId, userId) {
