@@ -181,6 +181,24 @@ export class Slime extends Enemy {
   currentMp = this.mp;
 }
 
+export class SnowBallGolem extends Enemy {
+  constructor(displayName) {
+    super(displayName, 'snowball golem');
+  }
+
+  // Override default stats for SnowBallGolem
+  str = 10;
+  con = 5;
+  dex = 3;
+  int = 8;
+  wil = 4;
+  spd = 2;
+  hp = 100;
+  currentHp = this.hp;
+  mp = 30;
+  currentMp = this.mp;
+}
+
 export class Battle {
   constructor({
     environment = 'stub',
