@@ -23,6 +23,7 @@ export function Game({
   const [playerHelpMessage, setPlayerHelpMessage] = useState('');
   const [weather, setWeather] = useState(null);
   const [weatherError, setWeatherError] = useState('');
+  const [weatherLocation, setWeatherLocation] = useState('namarran-wastes');
   const [battleStarted, setBattleStarted] = useState(false);
   const [battle, setBattle] = useState(null);
   const [currentTurn, setCurrentTurn] = useState(null);
@@ -130,7 +131,7 @@ export function Game({
 
     async function loadWeather() {
       try {
-        const response = await fetch('/api/weather');
+        const response = await fetch(`/api/weather?location=${weatherLocation}`);
         const data = await response.json();
         if (!response.ok) {
           throw new Error(data.msg || 'Weather is currently unavailable.');
@@ -152,7 +153,7 @@ export function Game({
       isMounted = false;
       window.clearInterval(interval);
     };
-  }, []);
+  }, [weatherLocation]);
 
   function createCharacter(event) {
     event.preventDefault();
@@ -173,10 +174,27 @@ export function Game({
     }));
   }
 
-  function startBattle() {
+  async function startBattle(location) {
     const context = canvasRef.current?.getContext('2d');
     if (!context) {
       return;
+    }
+
+    setWeatherLocation(location);
+    let battleWeather = null;
+    try {
+      const response = await fetch(`/api/weather?location=${location}`);
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.msg || 'Weather is currently unavailable.');
+      }
+      battleWeather = data;
+      setWeather(data);
+      setWeatherError('');
+    } catch (error) {
+      setWeatherError(
+        error instanceof Error ? error.message : 'Weather is currently unavailable.'
+      );
     }
 
     playerCharacter.initiative = 0;
@@ -189,6 +207,8 @@ export function Game({
     ];
     const enemyCounts = new Map();
     const battle = new Battle({
+      environment: location,
+      weather: battleWeather,
       playerCharacters: [playerCharacter, ...createSamplePartyMembers()],
       enemies: Array.from({ length: 4 }, () => {
         const { EnemyType, displayName } = enemyTypes[
@@ -459,9 +479,14 @@ export function Game({
                 {battleEnded ? (
                   playerCharacter.currentHp > 0
                     ? (
-                      <button className="battle-action-button" type="button" onClick={startBattle}>
-                        Start next battle
-                      </button>
+                      <div className="battle-location-buttons">
+                        <button className="battle-action-button" type="button" onClick={() => startBattle('namarran-wastes')}>
+                          Namarran Wastes
+                        </button>
+                        <button className="battle-action-button" type="button" onClick={() => startBattle('barren-peaks')}>
+                          Barren Peaks
+                        </button>
+                      </div>
                     )
                     : (
                       <button className="battle-action-button" type="button" onClick={retryCharacterDeletion}>
@@ -593,9 +618,14 @@ export function Game({
               </div>
             )}
             {!battleStarted && (
-              <button className="game-start-button" type="button" onClick={startBattle}>
-                Start battle
-              </button>
+              <div className="game-start-actions">
+                <button className="game-start-button" type="button" onClick={() => startBattle('namarran-wastes')}>
+                  Namarran Wastes
+                </button>
+                <button className="game-start-button" type="button" onClick={() => startBattle('barren-peaks')}>
+                  Barren Peaks
+                </button>
+              </div>
             )}
           </div>
         </Col>
@@ -643,7 +673,7 @@ export function Game({
 
         <Col xs={12}>
           <Card as="section" className="content-section">
-            <h2>Namarran Wastes Weather{weather ? `: ${weather.description}` : ''}</h2>
+            <h2>{weatherLocation === 'barren-peaks' ? 'Barren Peaks' : 'Namarran Wastes'} Weather{weather ? `: ${weather.description}` : ''}</h2>
             {weather ? (
               <>
                 <p>

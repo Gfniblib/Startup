@@ -20,9 +20,19 @@ const {
 
 const authCookieName = 'token';
 
-let weatherCache = null;
+const weatherCache = {};
 const weatherApiKey = process.env.OPENWEATHER_API_KEY;
 const weatherRefreshInterval = 60 * 60 * 1000;
+const weatherLocations = {
+  'namarran-wastes': {
+    label: 'Provo, US',
+    query: { q: 'Provo,US' },
+  },
+  'barren-peaks': {
+    label: 'McMurdo Station, Antarctica',
+    query: { lat: '-77.8419', lon: '166.6863' },
+  },
+};
 
 // The service port. In production the front-end code is statically hosted by the service on the same port.
 const port = process.argv.length > 2 ? process.argv[2] : 4000;
@@ -150,13 +160,19 @@ apiRouter.get('/scores', verifyAuth, async (_req, res) => {
   res.send(await getHighScores());
 });
 
-apiRouter.get('/weather', (_req, res) => {
-  if (!weatherCache) {
+apiRouter.get('/weather', (req, res) => {
+  const location = req.query.location || 'namarran-wastes';
+  if (!weatherLocations[location]) {
+    res.status(400).send({ msg: 'Unknown weather location.' });
+    return;
+  }
+
+  if (!weatherCache[location]) {
     res.status(503).send({ msg: 'Weather data is not available yet.' });
     return;
   }
 
-  res.send(weatherCache);
+  res.send(weatherCache[location]);
 });
 
 // Default error handler
@@ -211,13 +227,18 @@ app.listen(port, () => {
     return;
   }
 
-  refreshWeather();
-  setInterval(refreshWeather, weatherRefreshInterval);
+  Object.keys(weatherLocations).forEach((location) => refreshWeather(location));
+  setInterval(() => {
+    Object.keys(weatherLocations).forEach((location) => refreshWeather(location));
+  }, weatherRefreshInterval);
 });
 
-async function refreshWeather() {
+async function refreshWeather(location) {
+  const weatherLocation = weatherLocations[location];
   const url = new URL('https://api.openweathermap.org/data/2.5/weather');
-  url.searchParams.set('q', 'Provo,US');
+  Object.entries(weatherLocation.query).forEach(([key, value]) => {
+    url.searchParams.set(key, value);
+  });
   url.searchParams.set('units', 'imperial');
   url.searchParams.set('appid', weatherApiKey);
 
@@ -228,8 +249,10 @@ async function refreshWeather() {
     }
 
     const weather = await response.json();
-    weatherCache = {
-      location: `${weather.name}, ${weather.sys.country}`,
+    weatherCache[location] = {
+      location: location === 'barren-peaks'
+        ? weatherLocation.label
+        : `${weather.name}, ${weather.sys.country}`,
       description: weather.weather[0].description,
       temperature: weather.main.temp,
       feelsLike: weather.main.feels_like,
@@ -238,6 +261,6 @@ async function refreshWeather() {
       fetchedAt: new Date().toISOString(),
     };
   } catch (error) {
-    console.error('Unable to refresh Provo weather:', error);
+    console.error(`Unable to refresh ${weatherLocation.label} weather:`, error);
   }
 }
