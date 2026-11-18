@@ -2,3 +2,4 @@
 /dist
 /service/node_modules
 /service/.env
+/service/dbConfig.json
